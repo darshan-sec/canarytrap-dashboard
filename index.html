@@ -1,57 +1,254 @@
-// Use GitHub Pages URL instead - this should work with CORS
-const API_URL = 'https://carry100.github.io/canarytrap-dashboard/alerts.json';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CanaryTrap Dashboard | SOC</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #0a0e17;
+            --bg-card: #0d1424;
+            --accent-primary: #00d1b2; /* Cyber teal */
+            --accent-secondary: #3273dc; /* Blue */
+            --accent-alert: #ff470f; /* Red/Orange for alerts */
+            --text-light: #f5f5f5;
+            --text-muted: #8a9ba8;
+        }
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+        .navbar {
+            background-color: var(--bg-card) !important;
+            border-bottom: 1px solid var(--accent-primary);
+        }
+        .console-text {
+            color: var(--accent-primary);
+            font-family: 'Courier New', monospace;
+        }
+        .glow {
+            text-shadow: 0 0 10px rgba(0, 209, 178, 0.5);
+        }
+        .card {
+            background-color: var(--bg-card);
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-primary);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            color: var(--text-light);
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 209, 178, 0.2);
+        }
+        .table {
+            background-color: var(--bg-card);
+            color: var(--text-light);
+            width: 100%;
+        }
+        .table th {
+            color: var(--accent-primary) !important;
+            border-color: #2a3b5a !important;
+        }
+        .table td {
+            border-color: #2a3b5a !important;
+            color: var(--text-light);
+        }
+        .table tr:hover {
+            background-color: #1a243a !important;
+        }
+        .tag {
+            background-color: var(--accent-secondary) !important;
+            color: var(--text-light) !important;
+        }
+        .alert-badge {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .last-trigger {
+            background: linear-gradient(90deg, var(--accent-alert) 0%, transparent 100%);
+            border-left: 4px solid var(--accent-alert);
+        }
+    </style>
+</head>
+<body>
 
-async function loadAlerts() {
-    try {
-        console.log('Loading data from GitHub Pages...');
-        
-        const response = await fetch(API_URL, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
+    <!-- Navigation Bar -->
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+        <div class="container">
+            <div class="navbar-brand">
+                <a class="navbar-item" href="#">
+                    <span class="console-text glow"><i class="fas fa-dove"></i> CANARYTRAP DASHBOARD</span>
+                </a>
+            </div>
+            <div class="navbar-menu">
+                <div class="navbar-end">
+                    <div class="navbar-item">
+                        <span class="icon has-text-primary">
+                            <i class="fas fa-shield-alt"></i>
+                        </span>
+                        <span class="console-text">STATUS: <span class="has-text-primary">LIVE</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <section class="section">
+        <div class="container">
+            <!-- Header Stats -->
+            <div class="level">
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Total Alerts</p>
+                        <p class="title has-text-primary" id="totalAlerts">0</p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Unique IPs</p>
+                        <p class="title has-text-info" id="uniqueIPs">0</p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Last Trigger</p>
+                        <p class="title has-text-warning" id="lastTrigger">-</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerts Table -->
+            <div class="card">
+                <div class="card-content">
+                    <div class="content">
+                        <div class="is-flex is-justify-content-space-between is-align-items-center">
+                            <h2 class="title is-3 has-text-light">
+                                <span class="icon"><i class="fas fa-bell"></i></span>
+                                Trigger Events
+                            </h2>
+                            <button class="button is-small is-primary" onclick="loadAlerts()">
+                                <span class="icon"><i class="fas fa-sync-alt"></i></span>
+                                <span>Refresh</span>
+                            </button>
+                        </div>
+                        
+                        <div class="table-container">
+                            <table class="table is-fullwidth is-hoverable">
+                                <thead>
+                                    <tr>
+                                        <th>Timestamp (UTC)</th>
+                                        <th>Token</th>
+                                        <th>Source IP</th>
+                                        <th>User Agent</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="alertsTableBody">
+                                    <tr>
+                                        <td colspan="5" class="has-text-centered">Loading alert data...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Info Card -->
+            <div class="columns mt-5">
+                <div class="column">
+                    <div class="card">
+                        <div class="card-content">
+                            <h3 class="title is-4 has-text-light">
+                                <span class="icon"><i class="fas fa-info-circle"></i></span>
+                                About CanaryTrap
+                            </h3>
+                            <p class="has-text-muted">
+                                This dashboard monitors canary tokens deployed across various assets. 
+                                Each trigger represents potential unauthorized access or reconnaissance activity.
+                            </p>
+                            <br>
+                            <div class="tags">
+                                <span class="tag is-primary">Cloudflare Workers</span>
+                                <span class="tag is-info">Discord Webhooks</span>
+                                <span class="tag is-warning">GitHub API</span>
+                                <span class="tag is-danger">Real-time Alerts</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const GITHUB_DATA_URL = 'https://raw.githubusercontent.com/carry100/canarytrap-dashboard/main/alerts.json';
+
+        async function loadAlerts() {
+            try {
+                const response = await fetch(GITHUB_DATA_URL);
+                const data = await response.json();
+                const alerts = data.alerts || [];
+                const tableBody = document.getElementById('alertsTableBody');
+                
+                // Update stats
+                document.getElementById('totalAlerts').textContent = alerts.length;
+                
+                const uniqueIPs = new Set(alerts.map(alert => alert.sourceIP));
+                document.getElementById('uniqueIPs').textContent = uniqueIPs.size;
+                
+                if (alerts.length > 0) {
+                    const lastAlert = new Date(alerts[alerts.length-1].timestamp);
+                    document.getElementById('lastTrigger').textContent = lastAlert.toLocaleTimeString();
+                }
+
+                if (alerts.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="5" class="has-text-centered">No alerts detected. Traps are active and monitoring.</td></tr>';
+                    return;
+                }
+
+                tableBody.innerHTML = '';
+                alerts.reverse().forEach((alert, index) => {
+                    const isRecent = index === 0;
+                    const row = document.createElement('tr');
+                    if (isRecent) row.classList.add('last-trigger');
+                    
+                    row.innerHTML = `
+                        <td>${new Date(alert.timestamp).toLocaleString()}</td>
+                        <td><code class="console-text">${alert.token}</code></td>
+                        <td><span class="tag is-dark">${alert.sourceIP}</span></td>
+                        <td><span class="has-text-muted">${alert.userAgent?.substring(0, 50)}...</span></td>
+                        <td>
+                            <button class="button is-small is-outlined is-primary" onclick="alert('Full User Agent: ${alert.userAgent || 'Unknown'}')">
+                                <span class="icon"><i class="fas fa-search"></i></span>
+                            </button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error("Error loading alerts:", error);
+                document.getElementById('alertsTableBody').innerHTML = 
+                    '<tr><td colspan="5" class="has-text-centered has-text-danger">Error loading alert data. Check console.</td></tr>';
             }
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error: ${response.status}`);
         }
 
-        const data = await response.json();
-        console.log('Data loaded successfully:', data);
-        displayAlerts(data);
-        hideLoadingMessage();
-
-    } catch (error) {
-        console.error('Error:', error);
-        showError(`Failed to load: ${error.message}`);
-        hideLoadingMessage();
-        
-        // Fallback to Solution 1 if this fails
-        console.log('Trying GitHub API as fallback...');
-        loadAlertsWithGitHubAPI();
-    }
-}
-
-// Fallback function using GitHub API
-async function loadAlertsWithGitHubAPI() {
-    const githubApiUrl = 'https://api.github.com/repos/carry100/canarytrap-dashboard/contents/alerts.json';
-    
-    try {
-        const response = await fetch(githubApiUrl, {
-            headers: {
-                'Accept': 'application/vnd.github.v3+json'
-            }
+        // Load alerts on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAlerts();
+            // Refresh every 30 seconds
+            setInterval(loadAlerts, 30000);
         });
-
-        if (response.ok) {
-            const data = await response.json();
-            if (data.content && data.encoding === 'base64') {
-                const decodedContent = atob(data.content);
-                const alertsData = JSON.parse(decodedContent);
-                displayAlerts(alertsData);
-            }
-        }
-    } catch (fallbackError) {
-        console.error('Fallback also failed:', fallbackError);
-    }
-}
+    </script>
+</body>
+</html>
