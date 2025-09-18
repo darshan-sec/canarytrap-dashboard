@@ -4,11 +4,12 @@
 
     async function loadAlerts() {
         try {
-            console.log("Fetching alerts from:", GITHUB_DATA_URL);
-            const response = await fetch(GITHUB_DATA_URL);
+            // Use a CORS proxy to avoid browser restrictions
+            const corsProxy = "https://api.allorigins.win/raw?url=";
+            const response = await fetch(corsProxy + encodeURIComponent(GITHUB_DATA_URL));
             
             if (!response.ok) {
-                throw new Error(`GitHub HTTP error! status: ${response.status}`);
+                throw new Error(`Network error! status: ${response.status}`);
             }
             
             const data = await response.json();
@@ -53,7 +54,7 @@
         } catch (error) {
             console.error("Error loading alerts:", error);
             document.getElementById('alertsTableBody').innerHTML = 
-                '<tr><td colspan="5" class="has-text-centered has-text-danger">Error: ' + error.message + '</td></tr>';
+                '<tr><td colspan="5" class="has-text-centered has-text-danger">Error loading alerts. Please check console.</td></tr>';
         }
     }
 
