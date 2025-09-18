@@ -4,5 +4,11 @@
     "sourceIP": "2401:4900:16fa:d9ee:3cc0:851d:2849:63a1",
     "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
     "timestamp": "2025-09-18T10:23:50.658Z"
+  },
+  {
+    "token": "@vite",
+    "sourceIP": "165.227.84.14",
+    "userAgent": "Go-http-client/1.1",
+    "timestamp": "2025-09-18T11:02:50.510Z"
   }
 ]
