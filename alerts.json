@@ -1,1 +1,8 @@
-[]
+[
+  {
+    "token": "test-org-fix",
+    "sourceIP": "2401:4900:16fa:d9ee:3cc0:851d:2849:63a1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
+    "timestamp": "2025-09-18T10:23:50.658Z"
+  }
+]
