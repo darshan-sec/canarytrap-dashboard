@@ -1,293 +1,57 @@
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CanaryTrap Dashboard | SOC</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body {
-            background-color: #0a0e17;
-            color: #f5f5f5;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding: 20px;
-        }
-        .card {
-            background-color: #0d1424;
-            color: #f5f5f5;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-left: 4px solid #00d1b2;
-        }
-        .table {
-            background-color: #0d1424;
-            color: #f5f5f5;
-            width: 100%;
-        }
-        .table th {
-            color: #00d1b2 !important;
-        }
-        .table td {
-            color: #f5f5f5;
-        }
-        .tag {
-            background-color: #3273dc;
-            color: #f5f5f5;
-        }
-        .console-text {
-            color: #00d1b2;
-            font-family: 'Courier New', monospace;
-        }
-        .loading-spinner {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #3498db;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
-    margin: 0 auto 20px;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.alert-item {
-    background: #f5f5f5;
-    padding: 15px;
-    margin: 10px 0;
-    border-radius: 5px;
-    border-left: 4px solid #3273dc;
-}
-
-.alert-item h3 {
-    margin: 0 0 8px 0;
-    color: #3273dc;
-}
-    </style>
-</head>
-<body>
-
-    <nav class="navbar" style="background-color: #0d1424; margin-bottom: 30px;">
-        <div class="navbar-brand">
-            <a class="navbar-item">
-                <span style="color: #00d1b2; font-family: 'Courier New', monospace;">
-                    <i class="fas fa-dove"></i> CANARYTRAP DASHBOARD
-                </span>
-            </a>
-        </div>
-    </nav>
-
-    <div class="container">
-        <!-- Stats Section -->
-        <div class="level">
-            <div class="level-item has-text-centered">
-                <div>
-                    <p class="heading">Total Alerts</p>
-                    <p class="title has-text-primary" id="totalAlerts">0</p> <!-- This ID must match -->
-                </div>
-            </div>
-            <div class="level-item has-text-centered">
-                <div>
-                    <p class="heading">Unique IPs</p>
-                    <p class="title has-text-info" id="uniqueIPs">0</p> <!-- This ID must match -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Alerts Table -->
-        <div class="card">
-            <h2 class="title is-3" style="color: #f5f5f5;">
-                <i class="fas fa-bell"></i> Trigger Events
-            </h2>
-            <button class="button is-small is-primary" onclick="loadAlerts()" style="margin-bottom: 15px;">
-                <i class="fas fa-sync-alt"></i> Refresh
-            </button>
-            
-            <div class="table-container">
-                <table class="table is-fullwidth">
-                    <thead>
-                        <tr>
-                            <th>Timestamp</th>
-                            <th>Token</th>
-                            <th>Source IP</th>
-                            <th>User Agent</th>
-                        </tr>
-                    </thead>
-                    <tbody id="alertsTableBody"> <!-- This ID must match -->
-                        <tr>
-                            <td colspan="4" class="has-text-centered">Loading alert data...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-    <!-- Loading Section -->
-<section id="loading-section" class="section">
-    <div class="container has-text-centered">
-        <div class="loading-spinner"></div>
-        <p>Loading dashboard data...</p>
-    </div>
-</section>
-
-<!-- Data Section (initially hidden) -->
-<section id="data-section" class="section" style="display: none;">
-    <div class="container">
-        <h2 class="title">Alerts Dashboard</h2>
-        <div id="alerts-container" class="content">
-            <!-- Data will be inserted here by JavaScript -->
-        </div>
-        
-        <!-- Refresh Button -->
-        <button id="refresh-btn" class="button is-primary is-outlined">
-            <span class="icon">🔄</span>
-            <span>Refresh Data</span>
-        </button>
-    </div>
-</section>
-
-<!-- Error message element (will be created by JavaScript if not exists) -->
-
-    <script>
-       // Your actual API URL without the broken proxy
-const API_URL = 'https://raw.githubusercontent.com/carry100/canarytrap-dashboard/main/alerts.json';
+// Use GitHub Pages URL instead - this should work with CORS
+const API_URL = 'https://carry100.github.io/canarytrap-dashboard/alerts.json';
 
 async function loadAlerts() {
     try {
-        console.log('Loading data from:', API_URL);
+        console.log('Loading data from GitHub Pages...');
         
-        // Direct fetch to the real GitHub Raw URL
         const response = await fetch(API_URL, {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json',
-                // GitHub Raw doesn't usually require authentication for public repos
+                'Content-Type': 'application/json'
             }
         });
 
-        // Check if the response is successful
         if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`HTTP ${response.status}: ${errorText || 'Failed to load data'}`);
+            throw new Error(`HTTP error: ${response.status}`);
         }
 
-        // Parse the JSON response
         const data = await response.json();
-        
-        // Process your data here
         console.log('Data loaded successfully:', data);
-        displayAlerts(data); // You need to implement this function
-
-        // Hide loading message and show data
+        displayAlerts(data);
         hideLoadingMessage();
 
     } catch (error) {
-        console.error('Error loading alerts:', error);
-        showError(`Failed to load alerts: ${error.message}`);
+        console.error('Error:', error);
+        showError(`Failed to load: ${error.message}`);
         hideLoadingMessage();
-    }
-}
-
-function displayAlerts(data) {
-    // Implement this function to display your alerts data in the dashboard
-    // Example:
-    const alertsContainer = document.getElementById('alerts-container');
-    if (alertsContainer && data) {
-        alertsContainer.innerHTML = ''; // Clear previous content
         
-        if (data.length === 0) {
-            alertsContainer.innerHTML = '<p>No alerts found</p>';
-            return;
+        // Fallback to Solution 1 if this fails
+        console.log('Trying GitHub API as fallback...');
+        loadAlertsWithGitHubAPI();
+    }
+}
+
+// Fallback function using GitHub API
+async function loadAlertsWithGitHubAPI() {
+    const githubApiUrl = 'https://api.github.com/repos/carry100/canarytrap-dashboard/contents/alerts.json';
+    
+    try {
+        const response = await fetch(githubApiUrl, {
+            headers: {
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if (data.content && data.encoding === 'base64') {
+                const decodedContent = atob(data.content);
+                const alertsData = JSON.parse(decodedContent);
+                displayAlerts(alertsData);
+            }
         }
-
-        data.forEach(alert => {
-            const alertElement = document.createElement('div');
-            alertElement.className = 'alert-item';
-            alertElement.innerHTML = `
-                <h3>${alert.title || 'No title'}</h3>
-                <p>${alert.description || 'No description'}</p>
-                <small>Severity: ${alert.severity || 'unknown'}</small>
-            `;
-            alertsContainer.appendChild(alertElement);
-        });
+    } catch (fallbackError) {
+        console.error('Fallback also failed:', fallbackError);
     }
 }
-
-function showError(message) {
-    // Display error message in UI
-    const errorElement = document.getElementById('error-message') || createErrorElement();
-    errorElement.textContent = message;
-    errorElement.style.display = 'block';
-    
-    // Hide after 8 seconds
-    setTimeout(() => {
-        errorElement.style.display = 'none';
-    }, 8000);
-}
-
-function hideLoadingMessage() {
-    // Hide the loading section and show data section
-    const loadingSection = document.getElementById('loading-section');
-    const dataSection = document.getElementById('data-section');
-    
-    if (loadingSection) loadingSection.style.display = 'none';
-    if (dataSection) dataSection.style.display = 'block';
-}
-
-function createErrorElement() {
-    const errorDiv = document.createElement('div');
-    errorDiv.id = 'error-message';
-    errorDiv.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: #ff4757;
-        color: white;
-        padding: 15px;
-        border-radius: 5px;
-        z-index: 1000;
-        max-width: 300px;
-        display: none;
-        font-family: Arial, sans-serif;
-    `;
-    document.body.appendChild(errorDiv);
-    return errorDiv;
-}
-
-// Initialize dashboard when page loads
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Dashboard initialized - loading data from GitHub');
-    loadAlerts();
-    
-    // Add refresh button functionality if you have one
-    const refreshBtn = document.getElementById('refresh-btn');
-    if (refreshBtn) {
-        refreshBtn.addEventListener('click', function() {
-            console.log('Manual refresh triggered');
-            showLoadingMessage();
-            loadAlerts();
-        });
-    }
-});
-
-function showLoadingMessage() {
-    // Show loading section and hide data section
-    const loadingSection = document.getElementById('loading-section');
-    const dataSection = document.getElementById('data-section');
-    
-    if (loadingSection) loadingSection.style.display = 'block';
-    if (dataSection) dataSection.style.display = 'none';
-    
-    // Hide any existing errors
-    const errorElement = document.getElementById('error-message');
-    if (errorElement) errorElement.style.display = 'none';
-}
-    </script>
-
-</body>
-</html>
