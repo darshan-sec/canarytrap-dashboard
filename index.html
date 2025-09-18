@@ -1,66 +1,157 @@
-<script>
-    // Direct link to your alerts.json file
-    const GITHUB_DATA_URL = 'https://raw.githubusercontent.com/carry100/canarytrap-dashboard/main/alerts.json';
 
-    async function loadAlerts() {
-        try {
-            // Use a CORS proxy to avoid browser restrictions
-            const corsProxy = "https://api.allorigins.win/raw?url=";
-            const response = await fetch(corsProxy + encodeURIComponent(GITHUB_DATA_URL));
-            
-            if (!response.ok) {
-                throw new Error(`Network error! status: ${response.status}`);
-            }
-            
-            const data = await response.json();
-            const alerts = data.alerts || [];
-            const tableBody = document.getElementById('alertsTableBody');
-
-            // Update stats
-            document.getElementById('totalAlerts').textContent = alerts.length;
-            
-            const uniqueIPs = new Set(alerts.map(alert => alert.sourceIP));
-            document.getElementById('uniqueIPs').textContent = uniqueIPs.size;
-            
-            if (alerts.length > 0) {
-                const lastAlert = new Date(alerts[alerts.length-1].timestamp);
-                document.getElementById('lastTrigger').textContent = lastAlert.toLocaleTimeString();
-            }
-
-            if (alerts.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="5" class="has-text-centered">No alerts detected. Traps are active and monitoring.</td></tr>';
-                return;
-            }
-
-            tableBody.innerHTML = '';
-            alerts.reverse().forEach((alert, index) => {
-                const isRecent = index === 0;
-                const row = document.createElement('tr');
-                if (isRecent) row.classList.add('last-trigger');
-                
-                row.innerHTML = `
-                    <td>${new Date(alert.timestamp).toLocaleString()}</td>
-                    <td><code class="console-text">${alert.token}</code></td>
-                    <td><span class="tag is-dark">${alert.sourceIP}</span></td>
-                    <td><span class="has-text-muted">${alert.userAgent?.substring(0, 50)}...</span></td>
-                    <td>
-                        <button class="button is-small is-outlined is-primary" onclick="alert('Full User Agent: ${alert.userAgent || 'Unknown'}')">
-                            <span class="icon"><i class="fas fa-search"></i></span>
-                        </button>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-            });
-        } catch (error) {
-            console.error("Error loading alerts:", error);
-            document.getElementById('alertsTableBody').innerHTML = 
-                '<tr><td colspan="5" class="has-text-centered has-text-danger">Error loading alerts. Please check console.</td></tr>';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CanaryTrap Dashboard | SOC</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #0a0e17;
+            color: #f5f5f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
         }
-    }
+        .card {
+            background-color: #0d1424;
+            color: #f5f5f5;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #00d1b2;
+        }
+        .table {
+            background-color: #0d1424;
+            color: #f5f5f5;
+            width: 100%;
+        }
+        .table th {
+            color: #00d1b2 !important;
+        }
+        .table td {
+            color: #f5f5f5;
+        }
+        .tag {
+            background-color: #3273dc;
+            color: #f5f5f5;
+        }
+        .console-text {
+            color: #00d1b2;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
 
-    // Load alerts on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        loadAlerts();
-        setInterval(loadAlerts, 30000);
-    });
-</script>
+    <nav class="navbar" style="background-color: #0d1424; margin-bottom: 30px;">
+        <div class="navbar-brand">
+            <a class="navbar-item">
+                <span style="color: #00d1b2; font-family: 'Courier New', monospace;">
+                    <i class="fas fa-dove"></i> CANARYTRAP DASHBOARD
+                </span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Stats Section -->
+        <div class="level">
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">Total Alerts</p>
+                    <p class="title has-text-primary" id="totalAlerts">0</p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">Unique IPs</p>
+                    <p class="title has-text-info" id="uniqueIPs">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerts Table -->
+        <div class="card">
+            <h2 class="title is-3" style="color: #f5f5f5;">
+                <i class="fas fa-bell"></i> Trigger Events
+            </h2>
+            <button class="button is-small is-primary" onclick="loadAlerts()" style="margin-bottom: 15px;">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+            
+            <div class="table-container">
+                <table class="table is-fullwidth">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Token</th>
+                            <th>Source IP</th>
+                            <th>User Agent</th>
+                        </tr>
+                    </thead>
+                    <tbody id="alertsTableBody">
+                        <tr>
+                            <td colspan="4" class="has-text-centered">Loading alert data...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const GITHUB_DATA_URL = 'https://raw.githubusercontent.com/carry100/canarytrap-dashboard/main/alerts.json';
+
+        async function loadAlerts() {
+            try {
+                // Use CORS proxy
+                const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+                const response = await fetch(proxyUrl + GITHUB_DATA_URL);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load data');
+                }
+                
+                const data = await response.json();
+                const alerts = data.alerts || [];
+                const tableBody = document.getElementById('alertsTableBody');
+
+                // Update stats
+                document.getElementById('totalAlerts').textContent = alerts.length;
+                
+                const uniqueIPs = new Set(alerts.map(alert => alert.sourceIP));
+                document.getElementById('uniqueIPs').textContent = uniqueIPs.size;
+
+                if (alerts.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="4" class="has-text-centered">No alerts found</td></tr>';
+                    return;
+                }
+
+                // Clear and populate table
+                tableBody.innerHTML = '';
+                alerts.reverse().forEach(alert => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${new Date(alert.timestamp).toLocaleString()}</td>
+                        <td><code>${alert.token}</code></td>
+                        <td><span class="tag">${alert.sourceIP}</span></td>
+                        <td>${alert.userAgent?.substring(0, 40) || 'N/A'}...</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('alertsTableBody').innerHTML = 
+                    '<tr><td colspan="4" class="has-text-centered">Error loading data</td></tr>';
+            }
+        }
+
+        // Load alerts when page opens
+        document.addEventListener('DOMContentLoaded', loadAlerts);
+    </script>
+
+</body>
+</html>
