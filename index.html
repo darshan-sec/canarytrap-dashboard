@@ -41,6 +41,33 @@
             color: #00d1b2;
             font-family: 'Courier New', monospace;
         }
+        .loading-spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.alert-item {
+    background: #f5f5f5;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border-left: 4px solid #3273dc;
+}
+
+.alert-item h3 {
+    margin: 0 0 8px 0;
+    color: #3273dc;
+}
     </style>
 </head>
 <body>
@@ -100,63 +127,166 @@
             </div>
         </div>
     </div>
+    <!-- Loading Section -->
+<section id="loading-section" class="section">
+    <div class="container has-text-centered">
+        <div class="loading-spinner"></div>
+        <p>Loading dashboard data...</p>
+    </div>
+</section>
+
+<!-- Data Section (initially hidden) -->
+<section id="data-section" class="section" style="display: none;">
+    <div class="container">
+        <h2 class="title">Alerts Dashboard</h2>
+        <div id="alerts-container" class="content">
+            <!-- Data will be inserted here by JavaScript -->
+        </div>
+        
+        <!-- Refresh Button -->
+        <button id="refresh-btn" class="button is-primary is-outlined">
+            <span class="icon">🔄</span>
+            <span>Refresh Data</span>
+        </button>
+    </div>
+</section>
+
+<!-- Error message element (will be created by JavaScript if not exists) -->
 
     <script>
-        const GITHUB_DATA_URL = 'https://raw.githubusercontent.com/carry100/canarytrap-dashboard/main/alerts.json';
+       // Your actual API URL without the broken proxy
+const API_URL = 'https://raw.githubusercontent.com/carry100/canarytrap-dashboard/main/alerts.json';
 
-        async function loadAlerts() {
-            try {
-                // Use CORS proxy
-                const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-                const response = await fetch(proxyUrl + GITHUB_DATA_URL);
-                
-                if (!response.ok) {
-                    throw new Error('Failed to load data');
-                }
-                
-                const data = await response.json();
-                const alerts = data.alerts || [];
-                
-                // Get HTML elements - THESE MUST EXIST IN YOUR HTML
-                const totalAlertsElement = document.getElementById('totalAlerts');
-                const uniqueIPsElement = document.getElementById('uniqueIPs');
-                const tableBody = document.getElementById('alertsTableBody');
-
-                // Update stats
-                totalAlertsElement.textContent = alerts.length;
-                
-                const uniqueIPs = new Set(alerts.map(alert => alert.sourceIP));
-                uniqueIPsElement.textContent = uniqueIPs.size;
-
-                if (alerts.length === 0) {
-                    tableBody.innerHTML = '<tr><td colspan="4" class="has-text-centered">No alerts found</td></tr>';
-                    return;
-                }
-
-                // Clear and populate table
-                tableBody.innerHTML = '';
-                alerts.reverse().forEach(alert => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${new Date(alert.timestamp).toLocaleString()}</td>
-                        <td><code>${alert.token}</code></td>
-                        <td><span class="tag">${alert.sourceIP}</span></td>
-                        <td>${alert.userAgent?.substring(0, 40) || 'N/A'}...</td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-
-            } catch (error) {
-                console.error('Error:', error);
-                const tableBody = document.getElementById('alertsTableBody');
-                if (tableBody) {
-                    tableBody.innerHTML = '<tr><td colspan="4" class="has-text-centered">Error loading data</td></tr>';
-                }
+async function loadAlerts() {
+    try {
+        console.log('Loading data from:', API_URL);
+        
+        // Direct fetch to the real GitHub Raw URL
+        const response = await fetch(API_URL, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                // GitHub Raw doesn't usually require authentication for public repos
             }
+        });
+
+        // Check if the response is successful
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`HTTP ${response.status}: ${errorText || 'Failed to load data'}`);
         }
 
-        // Load alerts when page opens
-        document.addEventListener('DOMContentLoaded', loadAlerts);
+        // Parse the JSON response
+        const data = await response.json();
+        
+        // Process your data here
+        console.log('Data loaded successfully:', data);
+        displayAlerts(data); // You need to implement this function
+
+        // Hide loading message and show data
+        hideLoadingMessage();
+
+    } catch (error) {
+        console.error('Error loading alerts:', error);
+        showError(`Failed to load alerts: ${error.message}`);
+        hideLoadingMessage();
+    }
+}
+
+function displayAlerts(data) {
+    // Implement this function to display your alerts data in the dashboard
+    // Example:
+    const alertsContainer = document.getElementById('alerts-container');
+    if (alertsContainer && data) {
+        alertsContainer.innerHTML = ''; // Clear previous content
+        
+        if (data.length === 0) {
+            alertsContainer.innerHTML = '<p>No alerts found</p>';
+            return;
+        }
+
+        data.forEach(alert => {
+            const alertElement = document.createElement('div');
+            alertElement.className = 'alert-item';
+            alertElement.innerHTML = `
+                <h3>${alert.title || 'No title'}</h3>
+                <p>${alert.description || 'No description'}</p>
+                <small>Severity: ${alert.severity || 'unknown'}</small>
+            `;
+            alertsContainer.appendChild(alertElement);
+        });
+    }
+}
+
+function showError(message) {
+    // Display error message in UI
+    const errorElement = document.getElementById('error-message') || createErrorElement();
+    errorElement.textContent = message;
+    errorElement.style.display = 'block';
+    
+    // Hide after 8 seconds
+    setTimeout(() => {
+        errorElement.style.display = 'none';
+    }, 8000);
+}
+
+function hideLoadingMessage() {
+    // Hide the loading section and show data section
+    const loadingSection = document.getElementById('loading-section');
+    const dataSection = document.getElementById('data-section');
+    
+    if (loadingSection) loadingSection.style.display = 'none';
+    if (dataSection) dataSection.style.display = 'block';
+}
+
+function createErrorElement() {
+    const errorDiv = document.createElement('div');
+    errorDiv.id = 'error-message';
+    errorDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #ff4757;
+        color: white;
+        padding: 15px;
+        border-radius: 5px;
+        z-index: 1000;
+        max-width: 300px;
+        display: none;
+        font-family: Arial, sans-serif;
+    `;
+    document.body.appendChild(errorDiv);
+    return errorDiv;
+}
+
+// Initialize dashboard when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Dashboard initialized - loading data from GitHub');
+    loadAlerts();
+    
+    // Add refresh button functionality if you have one
+    const refreshBtn = document.getElementById('refresh-btn');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', function() {
+            console.log('Manual refresh triggered');
+            showLoadingMessage();
+            loadAlerts();
+        });
+    }
+});
+
+function showLoadingMessage() {
+    // Show loading section and hide data section
+    const loadingSection = document.getElementById('loading-section');
+    const dataSection = document.getElementById('data-section');
+    
+    if (loadingSection) loadingSection.style.display = 'block';
+    if (dataSection) dataSection.style.display = 'none';
+    
+    // Hide any existing errors
+    const errorElement = document.getElementById('error-message');
+    if (errorElement) errorElement.style.display = 'none';
+}
     </script>
 
 </body>
