@@ -76,5 +76,11 @@
     "sourceIP": "165.227.84.14",
     "userAgent": "Mozilla/5.0 (l9scan/2.0.33e27393e2431313e2838313; +https://leakix.net)",
     "timestamp": "2025-09-18T11:02:58.194Z"
+  },
+  {
+    "token": ".DS_Store",
+    "sourceIP": "167.172.158.128",
+    "userAgent": "Go-http-client/1.1",
+    "timestamp": "2025-09-18T11:02:58.881Z"
   }
 ]
