@@ -358,5 +358,11 @@
     "sourceIP": "2401:4900:49a1:a3b7:c991:9d19:51ae:7cfd",
     "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
     "timestamp": "2025-09-19T06:39:12.810Z"
+  },
+  {
+    "token": ".git",
+    "sourceIP": "213.209.157.232",
+    "userAgent": "iTunes/9.0.2 (Windows; N)",
+    "timestamp": "2025-09-19T10:32:18.329Z"
   }
 ]
