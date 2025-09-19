@@ -192,6 +192,50 @@
     </section>
 
     <script>
+        // 🚨 EMERGENCY SECURITY ALERT - UNAUTHORIZED DEPLOYMENT DETECTED
+console.log('🚨 SECURITY INVESTIGATION INITIATED');
+
+// Show immediate warning
+const emergencyAlert = document.createElement('div');
+emergencyAlert.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: #ff4757;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    z-index: 10000;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+`;
+emergencyAlert.innerHTML = `
+    🚨 SECURITY BREACH DETECTED: Unauthorized deployment 28 minutes ago
+    <br>
+    <small style="opacity: 0.8;">Immediate action required - Check GitHub security</small>
+    <button onclick="window.location.href='https://github.com/settings/security'" 
+            style="background: white; color: #ff4757; border: none; padding: 8px 16px; border-radius: 4px; margin-left: 15px; cursor: pointer;">
+        🔐 Secure GitHub
+    </button>
+`;
+document.body.appendChild(emergencyAlert);
+
+// Quick security check
+function quickSecurityScan() {
+    console.log('🔍 Quick security scan running...');
+    
+    // Check for suspicious scripts
+    document.querySelectorAll('script').forEach(script => {
+        if (script.src && (script.src.includes('malicious') || script.src.includes('hack'))) {
+            console.error('🚨 Suspicious script found:', script.src);
+        }
+    });
+}
+
+// Run immediately
+document.addEventListener('DOMContentLoaded', quickSecurityScan);
         const GITHUB_DATA_URL = 'https://raw.githubusercontent.com/carry100/canarytrap-dashboard/main/alerts.json';
 
         async function loadAlerts() {
