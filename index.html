@@ -192,6 +192,34 @@
     </section>
 
     <script>
+         // Security incident record
+         // Security incident record
+         // Security incident record
+        // Add this check to your security scan
+function checkGitExposure() {
+    fetch('/.git/HEAD')
+        .then(response => {
+            if (response.status === 200) {
+                console.error('🚨 CRITICAL: .git directory is publicly accessible!');
+                showCriticalAlert(
+                    'GIT EXPOSURE', 
+                    '.git directory is accessible! Source code exposure risk!'
+                );
+            }
+        })
+        .catch(() => {
+            console.log('✅ .git directory properly protected');
+        });
+}
+
+// Add to your DOMContentLoaded function
+checkGitExposure();
+
+
+
+         // Security incident record
+         // Security incident record
+        
         // 🚨 EMERGENCY SECURITY CODE - SINGLE VERSION (NO DUPLICATES)
         console.log('🚨 SECURITY INVESTIGATION INITIATED');
 
