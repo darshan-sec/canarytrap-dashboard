@@ -340,5 +340,11 @@
     "sourceIP": "2401:4900:16e5:a4f5:9154:1e56:3585:e907",
     "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
     "timestamp": "2025-09-18T19:28:07.382Z"
+  },
+  {
+    "token": ".git",
+    "sourceIP": "213.209.157.232",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36",
+    "timestamp": "2025-09-19T05:09:46.259Z"
   }
 ]
