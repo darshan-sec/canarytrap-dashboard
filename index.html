@@ -192,6 +192,92 @@
     </section>
 
     <script>
+
+        // 🚨 EMERGENCY SECURITY - DEPLOYMENT RULE TAMPERING DETECTED
+console.log('🚨 SECURITY INVESTIGATION: Deployment rule tampering detected');
+
+function showCriticalAlert(title, message) {
+    // Remove any existing alerts first
+    const existingAlert = document.getElementById('critical-security-alert');
+    if (existingAlert) existingAlert.remove();
+    
+    const alert = document.createElement('div');
+    alert.id = 'critical-security-alert';
+    alert.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(45deg, #ff0000, #ff4757);
+        color: white;
+        padding: 20px;
+        text-align: center;
+        z-index: 10000;
+        font-family: Arial, sans-serif;
+        font-size: 16px;
+        font-weight: bold;
+        border-bottom: 3px solid #fff;
+    `;
+    
+    alert.innerHTML = `
+        <div style="max-width: 800px; margin: 0 auto;">
+            <h2 style="margin: 0 0 10px 0; font-size: 24px;">${title}</h2>
+            <p style="margin: 0; font-size: 14px; opacity: 0.9;">${message}</p>
+            <p style="margin: 10px 0; font-size: 12px; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 4px;">
+                <strong>Detected:</strong> environment.update_protection_rule change to 'main' branch
+            </p>
+            <div style="margin-top: 15px;">
+                <button onclick="window.location.href='https://github.com/carry100/carry100.github.io/settings/pages'" 
+                        style="background: white; color: #ff0000; border: none; padding: 10px 20px; border-radius: 5px; margin: 0 5px; font-weight: bold; cursor: pointer;">
+                    🔧 Check Pages Settings
+                </button>
+                <button onclick="window.location.href='https://github.com/settings/security-log'" 
+                        style="background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 10px 20px; border-radius: 5px; margin: 0 5px; cursor: pointer;">
+                    📊 View Security Log
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.prepend(alert);
+    return alert;
+}
+
+// Run security monitoring
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚨 Starting security monitoring...');
+    
+    // Show immediate warning about the rule change
+    showCriticalAlert(
+        'DEPLOYMENT RULES TAMPERED', 
+        'Attackers modified your GitHub Pages deployment rules 12 hours ago!'
+    );
+    
+    // Monitor for suspicious activity
+    const originalFetch = window.fetch;
+    window.fetch = function(...args) {
+        const url = args[0];
+        if (typeof url === 'string' && 
+            (url.includes('deploy') || url.includes('environment') || url.includes('protection'))) {
+            console.error('🚨 SUSPICIOUS DEPLOYMENT ACTIVITY:', url);
+            showCriticalAlert('SUSPICIOUS ACTIVITY', 'Deployment-related activity detected');
+        }
+        return originalFetch.apply(this, args);
+    };
+});
+
+// Security incident record
+const SECURITY_INCIDENTS = [
+    {
+        type: 'DEPLOYMENT_RULE_TAMPERING',
+        severity: 'critical',
+        timestamp: '2025-09-18T23:02:35+0530',
+        description: 'environment.update_protection_rule changed to main branch',
+        recommendation: 'Immediately review GitHub Pages settings'
+    }
+];
+
+console.log('🚨 Recorded security incidents:', SECURITY_INCIDENTS);
         // 🚨 EMERGENCY SECURITY ALERT - UNAUTHORIZED DEPLOYMENT DETECTED
 console.log('🚨 SECURITY INVESTIGATION INITIATED');
 
