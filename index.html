@@ -297,7 +297,15 @@ emergencyAlert.style.cssText = `
     font-size: 16px;
     font-weight: bold;
 `;
-
+emergencyAlert.innerHTML = `
+    🚨 SECURITY BREACH DETECTED: Unauthorized deployment 28 minutes ago
+    <br>
+    <small style="opacity: 0.8;">Immediate action required - Check GitHub security</small>
+    <button onclick="window.location.href='https://github.com/settings/security'" 
+            style="background: white; color: #ff4757; border: none; padding: 8px 16px; border-radius: 4px; margin-left: 15px; cursor: pointer;">
+        🔐 Secure GitHub
+    </button>
+`;
 document.body.appendChild(emergencyAlert);
 
 // Quick security check
