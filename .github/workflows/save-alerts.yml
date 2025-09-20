@@ -1,0 +1,27 @@
+name: Save CanaryTrap Alerts
+on:
+  repository_dispatch:
+    types: [canarytrap-alert]
+jobs:
+  save-alert:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Save alert to JSON
+      run: |
+        # Read existing alerts
+        if [ -f alerts.json ]; then
+          echo "Updating existing alerts.json"
+          jq '.alerts += [${{ toJson(github.event.client_payload) }}]' alerts.json > temp.json
+        else
+          echo "Creating new alerts.json"
+          echo '{"alerts": [${{ toJson(github.event.client_payload) }}]}' > temp.json
+        fi
+        mv temp.json alerts.json
+    - name: Commit and push
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add alerts.json
+        git commit -m "Add new canarytrap alert"
+        git push
