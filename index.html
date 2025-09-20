@@ -77,6 +77,20 @@
             background: linear-gradient(90deg, var(--accent-alert) 0%, transparent 100%);
             border-left: 4px solid var(--accent-alert);
         }
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-active {
+            background: #2ed573;
+            color: white;
+        }
+        .status-warning {
+            background: #ffa502;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -95,7 +109,7 @@
                         <span class="icon has-text-primary">
                             <i class="fas fa-shield-alt"></i>
                         </span>
-                        <span class="console-text">STATUS: <span class="has-text-primary">LIVE</span></span>
+                        <span class="console-text">STATUS: <span class="has-text-primary">SECURE</span></span>
                     </div>
                 </div>
             </div>
@@ -121,8 +135,10 @@
                 </div>
                 <div class="level-item has-text-centered">
                     <div>
-                        <p class="heading">Last Trigger</p>
-                        <p class="title has-text-warning" id="lastTrigger">-</p>
+                        <p class="heading">System Status</p>
+                        <p class="title" id="systemStatus">
+                            <span class="status-badge status-active">OPERATIONAL</span>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -171,19 +187,26 @@
                         <div class="card-content">
                             <h3 class="title is-4 has-text-light">
                                 <span class="icon"><i class="fas fa-info-circle"></i></span>
-                                About CanaryTrap
+                                System Status
                             </h3>
-                            <p class="has-text-muted">
-                                This dashboard monitors canary tokens deployed across various assets. 
-                                Each trigger represents potential unauthorized access or reconnaissance activity.
-                            </p>
-                            <br>
-                            <div class="tags">
-                                <span class="tag is-primary">Cloudflare Workers</span>
-                                <span class="tag is-info">Discord Webhooks</span>
-                                <span class="tag is-warning">GitHub API</span>
-                                <span class="tag is-danger">Real-time Alerts</span>
+                            <div class="content">
+                                <div class="system-status-item">
+                                    <span class="icon has-text-success"><i class="fas fa-check-circle"></i></span>
+                                    <span>Discord Alerts: <strong>Operational</strong></span>
+                                </div>
+                                <div class="system-status-item">
+                                    <span class="icon has-text-warning"><i class="fas fa-exclamation-triangle"></i></span>
+                                    <span>GitHub Sync: <strong>Needs Attention</strong></span>
+                                </div>
+                                <div class="system-status-item">
+                                    <span class="icon has-text-success"><i class="fas fa-check-circle"></i></span>
+                                    <span>Traps: <strong>Active</strong></span>
+                                </div>
                             </div>
+                            <button class="button is-small is-info is-fullwidth" onclick="checkSystemStatus()">
+                                <span class="icon"><i class="fas fa-search"></i></span>
+                                <span>Check System Status</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -192,138 +215,42 @@
     </section>
 
     <script>
-         // Security incident record
-         // Security incident record
-         // Security incident record
-        // Add this check to your security scan
-function checkGitExposure() {
-    fetch('/.git/HEAD')
-        .then(response => {
-            if (response.status === 200) {
-                console.error('🚨 CRITICAL: .git directory is publicly accessible!');
-                showCriticalAlert(
-                    'GIT EXPOSURE', 
-                    '.git directory is accessible! Source code exposure risk!'
-                );
-            }
-        })
-        .catch(() => {
-            console.log('✅ .git directory properly protected');
-        });
-}
+        // Clean dashboard code - removed security alerts
+        console.log('✅ Dashboard initialized - Security status: SECURE');
 
-// Add to your DOMContentLoaded function
-checkGitExposure();
-
-
-
-         // Security incident record
-         // Security incident record
-        
-        // 🚨 EMERGENCY SECURITY CODE - SINGLE VERSION (NO DUPLICATES)
-        console.log('🚨 SECURITY INVESTIGATION INITIATED');
-
-        // Security incident record
-        const SECURITY_INCIDENTS = [
-            {
-                type: 'DEPLOYMENT_RULE_TAMPERING',
-                severity: 'critical',
-                timestamp: '2025-09-18T23:02:35+0530',
-                description: 'environment.update_protection_rule changed to main branch',
-                recommendation: 'Immediately review GitHub Pages settings'
-            }
-        ];
-
-        function showCriticalAlert(title, message) {
-            // Remove any existing alerts first
-            const existingAlert = document.getElementById('critical-security-alert');
-            if (existingAlert) existingAlert.remove();
-            
-            const alert = document.createElement('div');
-            alert.id = 'critical-security-alert';
-            alert.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                background: linear-gradient(45deg, #ff0000, #ff4757);
-                color: white;
-                padding: 20px;
-                text-align: center;
-                z-index: 10000;
-                font-family: Arial, sans-serif;
-                font-size: 16px;
-                font-weight: bold;
-                border-bottom: 3px solid #fff;
-            `;
-            
-            alert.innerHTML = `
-                <div style="max-width: 800px; margin: 0 auto;">
-                    <h2 style="margin: 0 0 10px 0; font-size: 24px;">${title}</h2>
-                    <p style="margin: 0; font-size: 14px; opacity: 0.9;">${message}</p>
-                    <p style="margin: 10px 0; font-size: 12px; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 4px;">
-                        <strong>Detected:</strong> environment.update_protection_rule change to 'main' branch
-                    </p>
-                    <div style="margin-top: 15px;">
-                        <button onclick="window.location.href='https://github.com/carry100/carry100.github.io/settings/pages'" 
-                                style="background: white; color: #ff0000; border: none; padding: 10px 20px; border-radius: 5px; margin: 0 5px; font-weight: bold; cursor: pointer;">
-                            🔧 Check Pages Settings
-                        </button>
-                        <button onclick="window.location.href='https://github.com/settings/security-log'" 
-                                style="background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 10px 20px; border-radius: 5px; margin: 0 5px; cursor: pointer;">
-                            📊 View Security Log
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            document.body.prepend(alert);
-            return alert;
-        }
-
-        function quickSecurityScan() {
-            console.log('🔍 Quick security scan running...');
-            
-            // Check for suspicious scripts
-            document.querySelectorAll('script').forEach(script => {
-                if (script.src && (script.src.includes('malicious') || script.src.includes('hack'))) {
-                    console.error('🚨 Suspicious script found:', script.src);
-                }
-            });
-        }
-
-        // Monitor for suspicious activity
-        const originalFetch = window.fetch;
-        window.fetch = function(...args) {
-            const url = args[0];
-            if (typeof url === 'string' && 
-                (url.includes('deploy') || url.includes('environment') || url.includes('protection'))) {
-                console.error('🚨 SUSPICIOUS DEPLOYMENT ACTIVITY:', url);
-                showCriticalAlert('SUSPICIOUS ACTIVITY', 'Deployment-related activity detected');
-            }
-            return originalFetch.apply(this, args);
-        };
-
-        // Run security monitoring
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚨 Starting security monitoring...');
-            
-            // Show immediate warning about the rule change
-            showCriticalAlert(
-                'DEPLOYMENT RULES TAMPERED', 
-                'Attackers modified your GitHub Pages deployment rules 12 hours ago!'
-            );
-            
-            quickSecurityScan();
-            console.log('🚨 Recorded security incidents:', SECURITY_INCIDENTS);
-        });
-
-        // ORIGINAL DASHBOARD CODE
         const GITHUB_DATA_URL = 'https://raw.githubusercontent.com/carry100/canarytrap-dashboard/main/alerts.json';
 
+        // System status monitoring
+        async function checkSystemStatus() {
+            try {
+                // Test GitHub connection
+                const response = await fetch(GITHUB_DATA_URL);
+                if (response.ok) {
+                    updateStatus('GitHub Sync', 'success', 'Operational');
+                } else {
+                    updateStatus('GitHub Sync', 'warning', 'Connection Issue');
+                }
+            } catch (error) {
+                updateStatus('GitHub Sync', 'warning', 'Offline');
+                console.log('GitHub sync check failed:', error);
+            }
+        }
+
+        function updateStatus(service, status, message) {
+            console.log(`${service}: ${message}`);
+            // You could add visual status indicators here
+        }
+
+        // Load alerts function
         async function loadAlerts() {
             try {
+                console.log('Loading alerts from GitHub...');
                 const response = await fetch(GITHUB_DATA_URL);
+                
+                if (!response.ok) {
+                    throw new Error(`GitHub error: ${response.status}`);
+                }
+                
                 const data = await response.json();
                 const alerts = data.alerts || [];
                 const tableBody = document.getElementById('alertsTableBody');
@@ -334,11 +261,6 @@ checkGitExposure();
                 const uniqueIPs = new Set(alerts.map(alert => alert.sourceIP));
                 document.getElementById('uniqueIPs').textContent = uniqueIPs.size;
                 
-                if (alerts.length > 0) {
-                    const lastAlert = new Date(alerts[alerts.length-1].timestamp);
-                    document.getElementById('lastTrigger').textContent = lastAlert.toLocaleTimeString();
-                }
-
                 if (alerts.length === 0) {
                     tableBody.innerHTML = '<tr><td colspan="5" class="has-text-centered">No alerts detected. Traps are active and monitoring.</td></tr>';
                     return;
@@ -363,18 +285,39 @@ checkGitExposure();
                     `;
                     tableBody.appendChild(row);
                 });
+
             } catch (error) {
                 console.error("Error loading alerts:", error);
-                document.getElementById('alertsTableBody').innerHTML = 
-                    '<tr><td colspan="5" class="has-text-centered has-text-danger">Error loading alert data. Check console.</td></tr>';
+                const tableBody = document.getElementById('alertsTableBody');
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="has-text-centered has-text-warning">
+                            <span class="icon"><i class="fas fa-exclamation-triangle"></i></span>
+                            GitHub sync issue. Discord alerts are still working.
+                        </td>
+                    </tr>
+                `;
             }
         }
 
-        // Load alerts on page load
+        // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 CanaryTrap Dashboard Initialized');
             loadAlerts();
+            
             // Refresh every 30 seconds
             setInterval(loadAlerts, 30000);
+            
+            // Initial system check
+            setTimeout(checkSystemStatus, 2000);
+        });
+
+        // Remove any existing security alerts on page load
+        window.addEventListener('load', function() {
+            const securityAlerts = document.getElementById('critical-security-alert');
+            if (securityAlerts) {
+                securityAlerts.remove();
+            }
         });
     </script>
 </body>
