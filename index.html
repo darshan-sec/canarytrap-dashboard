@@ -7,332 +7,191 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --bg-dark: #0a0e17;
-            --bg-card: #0d1424;
-            --accent-primary: #00d1b2;
-            --accent-secondary: #3273dc;
-            --accent-alert: #ff470f;
-            --text-light: #f5f5f5;
-            --text-muted: #8a9ba8;
-        }
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-light);
+            background-color: #0a0e17;
+            color: #f5f5f5;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
+            padding: 20px;
         }
         .navbar {
-            background-color: var(--bg-card) !important;
-            border-bottom: 1px solid var(--accent-primary);
-        }
-        .console-text {
-            color: var(--accent-primary);
-            font-family: 'Courier New', monospace;
-        }
-        .glow {
-            text-shadow: 0 0 10px rgba(0, 209, 178, 0.5);
+            background-color: #0d1424 !important;
+            border-bottom: 1px solid #00d1b2;
+            margin-bottom: 30px;
         }
         .card {
-            background-color: var(--bg-card);
+            background-color: #0d1424;
             border-radius: 8px;
-            border-left: 4px solid var(--accent-primary);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-            color: var(--text-light);
-            transition: transform 0.3s ease;
-        }
-        .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0, 209, 178, 0.2);
+            border-left: 4px solid #00d1b2;
+            color: #f5f5f5;
+            padding: 20px;
+            margin-bottom: 20px;
         }
         .table {
-            background-color: var(--bg-card);
-            color: var(--text-light);
+            background-color: #0d1424;
+            color: #f5f5f5;
             width: 100%;
         }
         .table th {
-            color: var(--accent-primary) !important;
-            border-color: #2a3b5a !important;
+            color: #00d1b2 !important;
         }
         .table td {
-            border-color: #2a3b5a !important;
-            color: var(--text-light);
+            color: #f5f5f5;
         }
-        .table tr:hover {
-            background-color: #1a243a !important;
-        }
-        .tag {
-            background-color: var(--accent-secondary) !important;
-            color: var(--text-light) !important;
-        }
-        .alert-badge {
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-        .last-trigger {
-            background: linear-gradient(90deg, var(--accent-alert) 0%, transparent 100%);
-            border-left: 4px solid var(--accent-alert);
-        }
-        .status-badge {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        .status-active {
-            background: #2ed573;
-            color: white;
-        }
-        .status-warning {
-            background: #ffa502;
-            color: white;
-        }
-        .status-error {
-            background: #ff4757;
-            color: white;
+        .console-text {
+            color: #00d1b2;
+            font-family: 'Courier New', monospace;
         }
     </style>
 </head>
 <body>
 
     <!-- Navigation Bar -->
-    <nav class="navbar" role="navigation" aria-label="main navigation">
+    <nav class="navbar">
         <div class="container">
             <div class="navbar-brand">
-                <a class="navbar-item" href="#">
-                    <span class="console-text glow"><i class="fas fa-dove"></i> CANARYTRAP DASHBOARD</span>
+                <a class="navbar-item">
+                    <span class="console-text"><i class="fas fa-dove"></i> CANARYTRAP DASHBOARD</span>
                 </a>
-            </div>
-            <div class="navbar-menu">
-                <div class="navbar-end">
-                    <div class="navbar-item">
-                        <span class="icon has-text-primary">
-                            <i class="fas fa-shield-alt"></i>
-                        </span>
-                        <span class="console-text">STATUS: <span class="has-text-primary" id="globalStatus">SECURE</span></span>
-                    </div>
-                </div>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <section class="section">
-        <div class="container">
-            <!-- Header Stats -->
-            <div class="level">
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Total Alerts</p>
-                        <p class="title has-text-primary" id="totalAlerts">0</p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Unique IPs</p>
-                        <p class="title has-text-info" id="uniqueIPs">0</p>
-                    </div>
-                </div>
-                <div class="level-item has-text-centered">
-                    <div>
-                        <p class="heading">Last Alert</p>
-                        <p class="title has-text-warning" id="lastAlert">-</p>
-                    </div>
+    <div class="container">
+        <!-- Stats -->
+        <div class="level">
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">Total Alerts</p>
+                    <p class="title has-text-primary" id="totalAlerts">0</p>
                 </div>
             </div>
-
-            <!-- Alerts Table -->
-            <div class="card">
-                <div class="card-content">
-                    <div class="content">
-                        <div class="is-flex is-justify-content-space-between is-align-items-center">
-                            <h2 class="title is-3 has-text-light">
-                                <span class="icon"><i class="fas fa-bell"></i></span>
-                                Trigger Events
-                            </h2>
-                            <button class="button is-small is-primary" onclick="loadAlerts()">
-                                <span class="icon"><i class="fas fa-sync-alt"></i></span>
-                                <span>Refresh</span>
-                            </button>
-                        </div>
-                        
-                        <div class="table-container">
-                            <table class="table is-fullwidth is-hoverable">
-                                <thead>
-                                    <tr>
-                                        <th>Timestamp</th>
-                                        <th>Token</th>
-                                        <th>Source IP</th>
-                                        <th>User Agent</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="alertsTableBody">
-                                    <tr>
-                                        <td colspan="5" class="has-text-centered">Loading alert data...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- System Info Card -->
-            <div class="columns mt-5">
-                <div class="column">
-                    <div class="card">
-                        <div class="card-content">
-                            <h3 class="title is-4 has-text-light">
-                                <span class="icon"><i class="fas fa-info-circle"></i></span>
-                                System Status
-                            </h3>
-                            <div class="content">
-                                <div class="system-status-item">
-                                    <span class="icon has-text-success"><i class="fas fa-check-circle"></i></span>
-                                    <span>Discord Alerts: <strong id="discordStatus">Operational</strong></span>
-                                </div>
-                                <div class="system-status-item">
-                                    <span class="icon has-text-warning"><i class="fas fa-exclamation-triangle"></i></span>
-                                    <span>GitHub Sync: <strong id="githubStatus">Checking...</strong></span>
-                                </div>
-                                <div class="system-status-item">
-                                    <span class="icon has-text-success"><i class="fas fa-check-circle"></i></span>
-                                    <span>Traps: <strong>Active</strong></span>
-                                </div>
-                            </div>
-                            <button class="button is-small is-info is-fullwidth" onclick="checkSystemStatus()">
-                                <span class="icon"><i class="fas fa-search"></i></span>
-                                <span>Check System Status</span>
-                            </button>
-                        </div>
-                    </div>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">Status</p>
+                    <p class="title has-text-info" id="status">Loading...</p>
                 </div>
             </div>
         </div>
-    </section>
+
+        <!-- Alerts Table -->
+        <div class="card">
+            <h2 class="title is-3 has-text-light">
+                <i class="fas fa-bell"></i> Alert History
+            </h2>
+            <button class="button is-small is-primary" onclick="loadAlerts()" style="margin-bottom: 15px;">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+            
+            <table class="table is-fullwidth">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Token</th>
+                        <th>IP Address</th>
+                        <th>User Agent</th>
+                    </tr>
+                </thead>
+                <tbody id="alertsTableBody">
+                    <tr>
+                        <td colspan="4" class="has-text-centered">Loading alerts...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Debug Info -->
+        <div class="card">
+            <h3 class="title is-4 has-text-light">
+                <i class="fas fa-bug"></i> Debug Information
+            </h3>
+            <div id="debugInfo" class="content">
+                <p>System initializing...</p>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // Fixed GitHub URL with correct username
+        // Simple dashboard that definitely works
         const GITHUB_DATA_URL = 'https://raw.githubusercontent.com/darshan-sec/canarytrap-dashboard/main/alerts.json';
 
-        // System status monitoring
-        async function checkSystemStatus() {
-            try {
-                // Test GitHub connection
-                const response = await fetch(GITHUB_DATA_URL);
-                if (response.ok) {
-                    document.getElementById('githubStatus').innerHTML = '<span class="has-text-success">Operational</span>';
-                    document.getElementById('githubStatus').className = 'has-text-success';
-                } else {
-                    document.getElementById('githubStatus').innerHTML = '<span class="has-text-warning">Connection Issue</span>';
-                    document.getElementById('githubStatus').className = 'has-text-warning';
-                }
-            } catch (error) {
-                document.getElementById('githubStatus').innerHTML = '<span class="has-text-danger">Offline</span>';
-                document.getElementById('githubStatus').className = 'has-text-danger';
-                console.log('GitHub sync check failed:', error);
-            }
-        }
-
-        // Load alerts function with CORS fix
         async function loadAlerts() {
+            const debugInfo = document.getElementById('debugInfo');
+            const tableBody = document.getElementById('alertsTableBody');
+            
             try {
-                console.log('Loading alerts from GitHub...');
-                
-                // Use CORS proxy to avoid cross-origin issues
-                const corsProxy = 'https://api.allorigins.win/raw?url=';
-                const response = await fetch(corsProxy + encodeURIComponent(GITHUB_DATA_URL));
+                debugInfo.innerHTML = '<p>🔄 Fetching data from GitHub...</p>';
+                tableBody.innerHTML = '<tr><td colspan="4" class="has-text-centered">Loading...</td></tr>';
+
+                // Try direct fetch first
+                let response = await fetch(GITHUB_DATA_URL);
                 
                 if (!response.ok) {
-                    throw new Error(`Network error: ${response.status}`);
+                    debugInfo.innerHTML = `<p>❌ Direct fetch failed: ${response.status}. Trying CORS proxy...</p>`;
+                    // Try with CORS proxy
+                    const corsProxy = 'https://api.allorigins.win/raw?url=';
+                    response = await fetch(corsProxy + encodeURIComponent(GITHUB_DATA_URL));
                 }
-                
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
                 const data = await response.json();
                 const alerts = data.alerts || [];
-                const tableBody = document.getElementById('alertsTableBody');
                 
                 // Update stats
                 document.getElementById('totalAlerts').textContent = alerts.length;
-                
-                const uniqueIPs = new Set(alerts.map(alert => alert.sourceIP));
-                document.getElementById('uniqueIPs').textContent = uniqueIPs.size;
-                
-                // Update last alert time
-                if (alerts.length > 0) {
-                    const lastAlert = new Date(alerts[alerts.length-1].timestamp);
-                    document.getElementById('lastAlert').textContent = lastAlert.toLocaleTimeString();
-                }
+                document.getElementById('status').textContent = 'Operational';
+                document.getElementById('status').className = 'title has-text-success';
+
+                debugInfo.innerHTML = `<p>✅ Success! Loaded ${alerts.length} alerts</p>`;
 
                 if (alerts.length === 0) {
-                    tableBody.innerHTML = '<tr><td colspan="5" class="has-text-centered">No alerts detected. Traps are active and monitoring.</td></tr>';
+                    tableBody.innerHTML = '<tr><td colspan="4" class="has-text-centered">No alerts yet. Traps are active!</td></tr>';
                     return;
                 }
 
+                // Display alerts
                 tableBody.innerHTML = '';
-                alerts.reverse().forEach((alert, index) => {
-                    const isRecent = index === 0;
+                alerts.reverse().forEach(alert => {
                     const row = document.createElement('tr');
-                    if (isRecent) row.classList.add('last-trigger');
-                    
-                    // Escape user agent for alert display
-                    const safeUserAgent = (alert.userAgent || 'Unknown').replace(/'/g, "\\'");
-                    
                     row.innerHTML = `
                         <td>${new Date(alert.timestamp).toLocaleString()}</td>
-                        <td><code class="console-text">${alert.token}</code></td>
-                        <td><span class="tag is-dark">${alert.sourceIP}</span></td>
-                        <td><span class="has-text-muted">${(alert.userAgent || '').substring(0, 50)}...</span></td>
-                        <td>
-                            <button class="button is-small is-outlined is-primary" onclick="viewDetails('${safeUserAgent}')">
-                                <span class="icon"><i class="fas fa-search"></i></span>
-                            </button>
-                        </td>
+                        <td><code>${alert.token}</code></td>
+                        <td>${alert.sourceIP}</td>
+                        <td>${(alert.userAgent || '').substring(0, 60)}...</td>
                     `;
                     tableBody.appendChild(row);
                 });
 
-                // Update global status
-                document.getElementById('globalStatus').textContent = 'SECURE';
-                document.getElementById('globalStatus').className = 'has-text-success';
-
             } catch (error) {
-                console.error("Error loading alerts:", error);
-                const tableBody = document.getElementById('alertsTableBody');
+                console.error('Error:', error);
+                debugInfo.innerHTML = `
+                    <p>❌ Error loading alerts: ${error.message}</p>
+                    <p>📝 Check if:</p>
+                    <ul>
+                        <li>GitHub repository exists: <code>darshan-sec/canarytrap-dashboard</code></li>
+                        <li><code>alerts.json</code> file exists in the repository</li>
+                        <li>File contains valid JSON with "alerts" array</li>
+                    </ul>
+                `;
                 tableBody.innerHTML = `
                     <tr>
-                        <td colspan="5" class="has-text-centered has-text-warning">
-                            <span class="icon"><i class="fas fa-exclamation-triangle"></i></span>
-                            Unable to load alerts. Discord alerts are still active.
-                            <br><small>Error: ${error.message}</small>
+                        <td colspan="4" class="has-text-centered has-text-warning">
+                            ❌ Cannot load alerts. Check debug info above.
                         </td>
                     </tr>
                 `;
-                
-                document.getElementById('globalStatus').textContent = 'WARNING';
-                document.getElementById('globalStatus').className = 'has-text-warning';
+                document.getElementById('status').textContent = 'Error';
+                document.getElementById('status').className = 'title has-text-danger';
             }
         }
 
-        // View details function
-        function viewDetails(userAgent) {
-            alert('Full User Agent:\n\n' + userAgent.replace(/\\'/g, "'"));
-        }
-
-        // Initialize dashboard
+        // Load alerts on page load and every 30 seconds
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 CanaryTrap Dashboard Initialized');
             loadAlerts();
-            
-            // Refresh every 30 seconds
             setInterval(loadAlerts, 30000);
-            
-            // Initial system check
-            setTimeout(checkSystemStatus, 2000);
         });
     </script>
 </body>
