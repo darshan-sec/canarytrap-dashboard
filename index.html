@@ -10,9 +10,9 @@
         :root {
             --bg-dark: #0a0e17;
             --bg-card: #0d1424;
-            --accent-primary: #00d1b2; /* Cyber teal */
-            --accent-secondary: #3273dc; /* Blue */
-            --accent-alert: #ff470f; /* Red/Orange for alerts */
+            --accent-primary: #00d1b2;
+            --accent-secondary: #3273dc;
+            --accent-alert: #ff470f;
             --text-light: #f5f5f5;
             --text-muted: #8a9ba8;
         }
@@ -91,6 +91,10 @@
             background: #ffa502;
             color: white;
         }
+        .status-error {
+            background: #ff4757;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -109,7 +113,7 @@
                         <span class="icon has-text-primary">
                             <i class="fas fa-shield-alt"></i>
                         </span>
-                        <span class="console-text">STATUS: <span class="has-text-primary">SECURE</span></span>
+                        <span class="console-text">STATUS: <span class="has-text-primary" id="globalStatus">SECURE</span></span>
                     </div>
                 </div>
             </div>
@@ -135,10 +139,8 @@
                 </div>
                 <div class="level-item has-text-centered">
                     <div>
-                        <p class="heading">System Status</p>
-                        <p class="title" id="systemStatus">
-                            <span class="status-badge status-active">OPERATIONAL</span>
-                        </p>
+                        <p class="heading">Last Alert</p>
+                        <p class="title has-text-warning" id="lastAlert">-</p>
                     </div>
                 </div>
             </div>
@@ -162,7 +164,7 @@
                             <table class="table is-fullwidth is-hoverable">
                                 <thead>
                                     <tr>
-                                        <th>Timestamp (UTC)</th>
+                                        <th>Timestamp</th>
                                         <th>Token</th>
                                         <th>Source IP</th>
                                         <th>User Agent</th>
@@ -192,11 +194,11 @@
                             <div class="content">
                                 <div class="system-status-item">
                                     <span class="icon has-text-success"><i class="fas fa-check-circle"></i></span>
-                                    <span>Discord Alerts: <strong>Operational</strong></span>
+                                    <span>Discord Alerts: <strong id="discordStatus">Operational</strong></span>
                                 </div>
                                 <div class="system-status-item">
                                     <span class="icon has-text-warning"><i class="fas fa-exclamation-triangle"></i></span>
-                                    <span>GitHub Sync: <strong>Needs Attention</strong></span>
+                                    <span>GitHub Sync: <strong id="githubStatus">Checking...</strong></span>
                                 </div>
                                 <div class="system-status-item">
                                     <span class="icon has-text-success"><i class="fas fa-check-circle"></i></span>
@@ -215,9 +217,7 @@
     </section>
 
     <script>
-        // Clean dashboard code - removed security alerts
-        console.log('✅ Dashboard initialized - Security status: SECURE');
-
+        // Fixed GitHub URL with correct username
         const GITHUB_DATA_URL = 'https://raw.githubusercontent.com/darshan-sec/canarytrap-dashboard/main/alerts.json';
 
         // System status monitoring
@@ -226,29 +226,30 @@
                 // Test GitHub connection
                 const response = await fetch(GITHUB_DATA_URL);
                 if (response.ok) {
-                    updateStatus('GitHub Sync', 'success', 'Operational');
+                    document.getElementById('githubStatus').innerHTML = '<span class="has-text-success">Operational</span>';
+                    document.getElementById('githubStatus').className = 'has-text-success';
                 } else {
-                    updateStatus('GitHub Sync', 'warning', 'Connection Issue');
+                    document.getElementById('githubStatus').innerHTML = '<span class="has-text-warning">Connection Issue</span>';
+                    document.getElementById('githubStatus').className = 'has-text-warning';
                 }
             } catch (error) {
-                updateStatus('GitHub Sync', 'warning', 'Offline');
+                document.getElementById('githubStatus').innerHTML = '<span class="has-text-danger">Offline</span>';
+                document.getElementById('githubStatus').className = 'has-text-danger';
                 console.log('GitHub sync check failed:', error);
             }
         }
 
-        function updateStatus(service, status, message) {
-            console.log(`${service}: ${message}`);
-            // You could add visual status indicators here
-        }
-
-        // Load alerts function
+        // Load alerts function with CORS fix
         async function loadAlerts() {
             try {
                 console.log('Loading alerts from GitHub...');
-                const response = await fetch(GITHUB_DATA_URL);
+                
+                // Use CORS proxy to avoid cross-origin issues
+                const corsProxy = 'https://api.allorigins.win/raw?url=';
+                const response = await fetch(corsProxy + encodeURIComponent(GITHUB_DATA_URL));
                 
                 if (!response.ok) {
-                    throw new Error(`GitHub error: ${response.status}`);
+                    throw new Error(`Network error: ${response.status}`);
                 }
                 
                 const data = await response.json();
@@ -261,6 +262,12 @@
                 const uniqueIPs = new Set(alerts.map(alert => alert.sourceIP));
                 document.getElementById('uniqueIPs').textContent = uniqueIPs.size;
                 
+                // Update last alert time
+                if (alerts.length > 0) {
+                    const lastAlert = new Date(alerts[alerts.length-1].timestamp);
+                    document.getElementById('lastAlert').textContent = lastAlert.toLocaleTimeString();
+                }
+
                 if (alerts.length === 0) {
                     tableBody.innerHTML = '<tr><td colspan="5" class="has-text-centered">No alerts detected. Traps are active and monitoring.</td></tr>';
                     return;
@@ -272,19 +279,26 @@
                     const row = document.createElement('tr');
                     if (isRecent) row.classList.add('last-trigger');
                     
+                    // Escape user agent for alert display
+                    const safeUserAgent = (alert.userAgent || 'Unknown').replace(/'/g, "\\'");
+                    
                     row.innerHTML = `
                         <td>${new Date(alert.timestamp).toLocaleString()}</td>
                         <td><code class="console-text">${alert.token}</code></td>
                         <td><span class="tag is-dark">${alert.sourceIP}</span></td>
-                        <td><span class="has-text-muted">${alert.userAgent?.substring(0, 50)}...</span></td>
+                        <td><span class="has-text-muted">${(alert.userAgent || '').substring(0, 50)}...</span></td>
                         <td>
-                            <button class="button is-small is-outlined is-primary" onclick="alert('Full User Agent: ${alert.userAgent || 'Unknown'}')">
+                            <button class="button is-small is-outlined is-primary" onclick="viewDetails('${safeUserAgent}')">
                                 <span class="icon"><i class="fas fa-search"></i></span>
                             </button>
                         </td>
                     `;
                     tableBody.appendChild(row);
                 });
+
+                // Update global status
+                document.getElementById('globalStatus').textContent = 'SECURE';
+                document.getElementById('globalStatus').className = 'has-text-success';
 
             } catch (error) {
                 console.error("Error loading alerts:", error);
@@ -293,11 +307,20 @@
                     <tr>
                         <td colspan="5" class="has-text-centered has-text-warning">
                             <span class="icon"><i class="fas fa-exclamation-triangle"></i></span>
-                            GitHub sync issue. Discord alerts are still working.
+                            Unable to load alerts. Discord alerts are still active.
+                            <br><small>Error: ${error.message}</small>
                         </td>
                     </tr>
                 `;
+                
+                document.getElementById('globalStatus').textContent = 'WARNING';
+                document.getElementById('globalStatus').className = 'has-text-warning';
             }
+        }
+
+        // View details function
+        function viewDetails(userAgent) {
+            alert('Full User Agent:\n\n' + userAgent.replace(/\\'/g, "'"));
         }
 
         // Initialize dashboard
@@ -310,14 +333,6 @@
             
             // Initial system check
             setTimeout(checkSystemStatus, 2000);
-        });
-
-        // Remove any existing security alerts on page load
-        window.addEventListener('load', function() {
-            const securityAlerts = document.getElementById('critical-security-alert');
-            if (securityAlerts) {
-                securityAlerts.remove();
-            }
         });
     </script>
 </body>
