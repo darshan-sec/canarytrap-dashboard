@@ -168,7 +168,6 @@
     <script>
     const GITHUB_DATA_URL = 'https://raw.githubusercontent.com/darshan-sec/canarytrap-dashboard/main/alerts.json';
 
-    // Update connection status
     function updateConnectionStatus(connected, message) {
         const indicator = document.getElementById('statusIndicator');
         const statusText = document.getElementById('connectionStatus');
@@ -184,52 +183,11 @@
         }
     }
 
-    // Debug function to check GitHub file
-    async function debugGitHubFile() {
-        console.log('🔍 Debugging GitHub file...');
-        
-        try {
-            // Try to access the file directly
-            const response = await fetch(GITHUB_DATA_URL);
-            console.log('📡 Response status:', response.status);
-            
-            if (response.ok) {
-                const text = await response.text();
-                console.log('📄 File content:', text);
-                
-                try {
-                    const data = JSON.parse(text);
-                    console.log('✅ Valid JSON:', data);
-                    console.log('📊 Alerts count:', data.alerts ? data.alerts.length : 'No alerts array');
-                    
-                    if (data.alerts) {
-                        data.alerts.forEach((alert, index) => {
-                            console.log(`🔔 Alert ${index + 1}:`, alert);
-                        });
-                    }
-                    
-                    return data;
-                } catch (parseError) {
-                    console.log('❌ JSON parse error:', parseError);
-                    return null;
-                }
-            } else {
-                console.log('❌ HTTP error:', response.status, response.statusText);
-                return null;
-            }
-        } catch (error) {
-            console.log('❌ Fetch error:', error);
-            return null;
-        }
-    }
-
-    // Load alerts with detailed debugging
     async function loadAlerts() {
         const loadingMessage = document.getElementById('loadingMessage');
         const alertsTable = document.getElementById('alertsTable');
         const tableBody = document.getElementById('alertsTableBody');
 
-        console.log('🔄 Starting to load alerts...');
         loadingMessage.innerHTML = '<p><i class="fas fa-spinner fa-spin"></i> Loading alerts...</p>';
         loadingMessage.style.display = 'block';
         alertsTable.style.display = 'none';
@@ -238,15 +196,29 @@
         try {
             updateConnectionStatus(false, 'Fetching data...');
 
-            // Debug the GitHub file first
-            const debugData = await debugGitHubFile();
+            // Fetch data
+            const response = await fetch(GITHUB_DATA_URL);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
             
-            if (!debugData) {
-                throw new Error('Cannot access GitHub file');
+            const data = await response.json();
+            console.log('📄 Raw data:', data);
+
+            // FIX: Handle both data formats
+            let alerts = [];
+            if (Array.isArray(data)) {
+                // Format 1: Direct array of alerts
+                console.log('🔧 Detected array format, converting...');
+                alerts = data;
+            } else if (data.alerts && Array.isArray(data.alerts)) {
+                // Format 2: {alerts: [...]} format
+                console.log('✅ Detected correct alerts format');
+                alerts = data.alerts;
+            } else {
+                console.log('❌ Unknown data format');
+                alerts = [];
             }
 
-            const alerts = debugData.alerts || [];
-            console.log(`📈 Found ${alerts.length} real alerts`);
+            console.log(`📈 Found ${alerts.length} alerts`);
 
             // Update stats
             document.getElementById('totalAlerts').textContent = alerts.length;
@@ -260,24 +232,19 @@
                     new Date(lastAlert.timestamp).toLocaleTimeString();
             }
 
-            // Display REAL alerts
+            // Display alerts
             if (alerts.length === 0) {
-                console.log('📭 No real alerts found, showing empty state');
                 tableBody.innerHTML = `
                     <tr>
                         <td colspan="5" class="has-text-centered">
                             <div class="content">
                                 <p>🚨 No alerts yet</p>
                                 <p class="is-size-7 has-text-muted">Alerts will appear here when traps are triggered</p>
-                                <button class="button is-small is-primary" onclick="testAlert()">
-                                    <i class="fas fa-bolt"></i> Trigger Test Alert
-                                </button>
                             </div>
                         </td>
                     </tr>
                 `;
             } else {
-                console.log('🎯 Displaying real alerts');
                 // Show most recent alerts first
                 alerts.reverse().forEach((alert, index) => {
                     const row = document.createElement('tr');
@@ -317,100 +284,15 @@
             
             loadingMessage.innerHTML = `
                 <div class="notification is-warning">
-                    <p><strong>Unable to load real alerts</strong></p>
+                    <p><strong>Unable to load alerts</strong></p>
                     <p>Error: ${error.message}</p>
-                    <p class="is-size-7">Showing demo data instead. Check browser console (F12) for details.</p>
-                    <button class="button is-small is-info" onclick="loadAlerts()" style="margin-top: 10px;">
-                        <i class="fas fa-sync-alt"></i> Try Again
-                    </button>
                 </div>
             `;
             
             updateConnectionStatus(false, 'Connection failed');
-            
-            // Only show demo data as fallback
-            showDemoData();
         }
     }
 
-    // Show demo data only as fallback
-    function showDemoData() {
-        console.log('🔄 Falling back to demo data');
-        const tableBody = document.getElementById('alertsTableBody');
-        const alertsTable = document.getElementById('alertsTable');
-        const loadingMessage = document.getElementById('loadingMessage');
-        
-        const demoAlerts = [
-            {
-                token: 'demo-token-1',
-                sourceIP: '192.168.1.100',
-                userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                timestamp: new Date(Date.now() - 2 * 60 * 1000).toISOString()
-            },
-            {
-                token: 'demo-token-2', 
-                sourceIP: '203.0.113.45',
-                userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15',
-                timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString()
-            }
-        ];
-
-        tableBody.innerHTML = '';
-        demoAlerts.forEach(alert => {
-            const row = document.createElement('tr');
-            const safeUserAgent = alert.userAgent.replace(/'/g, "\\'");
-            
-            row.innerHTML = `
-                <td>${new Date(alert.timestamp).toLocaleString()} <span class="tag is-warning is-small">DEMO</span></td>
-                <td><code class="console-text">${alert.token}</code></td>
-                <td><span class="tag is-dark">${alert.sourceIP}</span></td>
-                <td>${alert.userAgent.substring(0, 50)}...</td>
-                <td>
-                    <button class="button is-small is-outlined is-primary" 
-                            onclick="showAlertDetails('${alert.token}', '${alert.sourceIP}', '${safeUserAgent}', '${alert.timestamp}')">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                </td>
-            `;
-            tableBody.appendChild(row);
-        });
-
-        document.getElementById('totalAlerts').textContent = demoAlerts.length;
-        document.getElementById('uniqueIPs').textContent = 2;
-        document.getElementById('lastTrigger').textContent = 'Demo';
-
-        loadingMessage.style.display = 'none';
-        alertsTable.style.display = 'table';
-        updateConnectionStatus(true, 'Demo Mode - 2 alerts');
-        
-        console.log('✅ Demo data loaded');
-    }
-
-    // Test alert function
-    async function testAlert() {
-        try {
-            console.log('🚀 Triggering test alert...');
-            // Trigger your actual worker
-            await fetch('https://accountinfo.darshandarsha439.workers.dev/demo-test-' + Date.now());
-            
-            // Show success message
-            const notification = document.createElement('div');
-            notification.className = 'notification is-success';
-            notification.innerHTML = `
-                <button class="delete" onclick="this.parentElement.remove()"></button>
-                <p>✅ Test alert triggered! Check Discord and refresh in 30 seconds to see it here.</p>
-            `;
-            document.querySelector('.container').prepend(notification);
-            
-            // Auto-refresh after 30 seconds
-            setTimeout(loadAlerts, 30000);
-            
-        } catch (error) {
-            console.error('Test alert failed:', error);
-        }
-    }
-
-    // Show alert details
     function showAlertDetails(token, ip, userAgent, timestamp) {
         alert(`🔍 Alert Details:\n\nToken: ${token}\nIP: ${ip}\nTime: ${new Date(timestamp).toLocaleString()}\nUser Agent: ${userAgent.replace(/\\'/g, "'")}`);
     }
@@ -418,13 +300,11 @@
     // Initialize dashboard
     document.addEventListener('DOMContentLoaded', function() {
         console.log('🚀 CanaryTrap Dashboard Initialized');
-        console.log('📡 GitHub URL:', GITHUB_DATA_URL);
         loadAlerts();
         
         // Auto-refresh every 30 seconds
         setInterval(loadAlerts, 30000);
     });
 </script>
-
     </body>
 </html>
