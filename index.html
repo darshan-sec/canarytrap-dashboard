@@ -7,40 +7,60 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --bg-dark: #0a0e17;
+            --bg-card: #0d1424;
+            --accent-primary: #00d1b2;
+            --accent-secondary: #3273dc;
+            --accent-alert: #ff470f;
+            --text-light: #f5f5f5;
+            --text-muted: #8a9ba8;
+        }
         body {
-            background-color: #0a0e17;
-            color: #f5f5f5;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
-            padding: 20px;
         }
         .navbar {
-            background-color: #0d1424 !important;
-            border-bottom: 1px solid #00d1b2;
-            margin-bottom: 30px;
+            background-color: var(--bg-card) !important;
+            border-bottom: 1px solid var(--accent-primary);
+        }
+        .console-text {
+            color: var(--accent-primary);
+            font-family: 'Courier New', monospace;
         }
         .card {
-            background-color: #0d1424;
+            background-color: var(--bg-card);
             border-radius: 8px;
-            border-left: 4px solid #00d1b2;
-            color: #f5f5f5;
+            border-left: 4px solid var(--accent-primary);
+            color: var(--text-light);
             padding: 20px;
             margin-bottom: 20px;
         }
         .table {
-            background-color: #0d1424;
-            color: #f5f5f5;
+            background-color: var(--bg-card);
+            color: var(--text-light);
             width: 100%;
         }
         .table th {
-            color: #00d1b2 !important;
+            color: var(--accent-primary) !important;
         }
         .table td {
-            color: #f5f5f5;
+            color: var(--text-light);
         }
-        .console-text {
-            color: #00d1b2;
-            font-family: 'Courier New', monospace;
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-online {
+            background-color: #00d1b2;
+        }
+        .status-offline {
+            background-color: #ff3860;
         }
     </style>
 </head>
@@ -54,144 +74,327 @@
                     <span class="console-text"><i class="fas fa-dove"></i> CANARYTRAP DASHBOARD</span>
                 </a>
             </div>
+            <div class="navbar-menu">
+                <div class="navbar-end">
+                    <div class="navbar-item">
+                        <span class="status-indicator" id="statusIndicator"></span>
+                        <span id="connectionStatus">Connecting...</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </nav>
 
-    <div class="container">
-        <!-- Stats -->
-        <div class="level">
-            <div class="level-item has-text-centered">
-                <div>
-                    <p class="heading">Total Alerts</p>
-                    <p class="title has-text-primary" id="totalAlerts">0</p>
+    <!-- Main Content -->
+    <section class="section">
+        <div class="container">
+            <!-- Stats -->
+            <div class="level">
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Total Alerts</p>
+                        <p class="title has-text-primary" id="totalAlerts">0</p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Unique Attackers</p>
+                        <p class="title has-text-info" id="uniqueIPs">0</p>
+                    </div>
+                </div>
+                <div class="level-item has-text-centered">
+                    <div>
+                        <p class="heading">Last Trigger</p>
+                        <p class="title has-text-warning" id="lastTrigger">Never</p>
+                    </div>
                 </div>
             </div>
-            <div class="level-item has-text-centered">
-                <div>
-                    <p class="heading">Status</p>
-                    <p class="title has-text-info" id="status">Loading...</p>
+
+            <!-- Alerts Table -->
+            <div class="card">
+                <div class="content">
+                    <div class="is-flex is-justify-content-space-between is-align-items-center">
+                        <h2 class="title is-3 has-text-light">
+                            <i class="fas fa-bell"></i> Alert History
+                        </h2>
+                        <div>
+                            <button class="button is-small is-primary" onclick="loadAlerts()">
+                                <i class="fas fa-sync-alt"></i> Refresh
+                            </button>
+                            <button class="button is-small is-info" onclick="testAlert()" style="margin-left: 10px;">
+                                <i class="fas fa-bolt"></i> Test Alert
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="loadingMessage" class="has-text-centered">
+                        <p><i class="fas fa-spinner fa-spin"></i> Loading alerts...</p>
+                    </div>
+
+                    <table class="table is-fullwidth is-hoverable" style="display: none;" id="alertsTable">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Token</th>
+                                <th>IP Address</th>
+                                <th>User Agent</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alertsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- System Info -->
+            <div class="card">
+                <h3 class="title is-4 has-text-light">
+                    <i class="fas fa-info-circle"></i> About This Dashboard
+                </h3>
+                <div class="content">
+                    <p>This dashboard displays real-time alerts from deployed canary traps. Each alert represents a potential security incident detected by the system.</p>
+                    <p><strong>Live Demo:</strong> Click "Test Alert" to trigger a demo alert and see the system in action.</p>
+                    <div class="tags">
+                        <span class="tag is-primary">Cloudflare Workers</span>
+                        <span class="tag is-info">Discord Webhooks</span>
+                        <span class="tag is-success">GitHub Storage</span>
+                        <span class="tag is-warning">Real-time Monitoring</span>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <!-- Alerts Table -->
-        <div class="card">
-            <h2 class="title is-3 has-text-light">
-                <i class="fas fa-bell"></i> Alert History
-            </h2>
-            <button class="button is-small is-primary" onclick="loadAlerts()" style="margin-bottom: 15px;">
-                <i class="fas fa-sync-alt"></i> Refresh
-            </button>
-            
-            <table class="table is-fullwidth">
-                <thead>
-                    <tr>
-                        <th>Time</th>
-                        <th>Token</th>
-                        <th>IP Address</th>
-                        <th>User Agent</th>
-                    </tr>
-                </thead>
-                <tbody id="alertsTableBody">
-                    <tr>
-                        <td colspan="4" class="has-text-centered">Loading alerts...</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Debug Info -->
-        <div class="card">
-            <h3 class="title is-4 has-text-light">
-                <i class="fas fa-bug"></i> Debug Information
-            </h3>
-            <div id="debugInfo" class="content">
-                <p>System initializing...</p>
-            </div>
-        </div>
-    </div>
+    </section>
 
     <script>
-        // Simple dashboard that definitely works
+        // GitHub raw file URL - using your actual repository
         const GITHUB_DATA_URL = 'https://raw.githubusercontent.com/darshan-sec/canarytrap-dashboard/main/alerts.json';
 
-        async function loadAlerts() {
-            const debugInfo = document.getElementById('debugInfo');
-            const tableBody = document.getElementById('alertsTableBody');
+        // Update connection status
+        function updateConnectionStatus(connected, message) {
+            const indicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('connectionStatus');
             
-            try {
-                debugInfo.innerHTML = '<p>🔄 Fetching data from GitHub...</p>';
-                tableBody.innerHTML = '<tr><td colspan="4" class="has-text-centered">Loading...</td></tr>';
+            if (connected) {
+                indicator.className = 'status-indicator status-online';
+                statusText.textContent = message || 'Connected';
+                statusText.className = 'has-text-success';
+            } else {
+                indicator.className = 'status-indicator status-offline';
+                statusText.textContent = message || 'Disconnected';
+                statusText.className = 'has-text-danger';
+            }
+        }
 
-                // Try direct fetch first
+        // Load alerts with multiple fallback methods
+        async function loadAlerts() {
+            const loadingMessage = document.getElementById('loadingMessage');
+            const alertsTable = document.getElementById('alertsTable');
+            const tableBody = document.getElementById('alertsTableBody');
+
+            loadingMessage.style.display = 'block';
+            alertsTable.style.display = 'none';
+            tableBody.innerHTML = '';
+
+            try {
+                console.log('🔄 Loading alerts from GitHub...');
+                updateConnectionStatus(false, 'Fetching data...');
+
+                // Method 1: Try direct fetch first
                 let response = await fetch(GITHUB_DATA_URL);
-                
+                console.log('Direct fetch status:', response.status);
+
+                // Method 2: If direct fails, try with cache busting
                 if (!response.ok) {
-                    debugInfo.innerHTML = `<p>❌ Direct fetch failed: ${response.status}. Trying CORS proxy...</p>`;
-                    // Try with CORS proxy
+                    console.log('Direct fetch failed, trying cache busting...');
+                    response = await fetch(GITHUB_DATA_URL + '?t=' + Date.now());
+                }
+
+                // Method 3: If still fails, try CORS proxy
+                if (!response.ok) {
+                    console.log('Cache busting failed, trying CORS proxy...');
                     const corsProxy = 'https://api.allorigins.win/raw?url=';
                     response = await fetch(corsProxy + encodeURIComponent(GITHUB_DATA_URL));
                 }
 
                 if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
+                    throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`);
                 }
 
                 const data = await response.json();
+                console.log('📊 Data received:', data);
+
+                // Check if alerts array exists
+                if (!data.alerts) {
+                    throw new Error('No alerts array found in JSON file');
+                }
+
                 const alerts = data.alerts || [];
-                
+                console.log(`📈 Found ${alerts.length} alerts`);
+
                 // Update stats
                 document.getElementById('totalAlerts').textContent = alerts.length;
-                document.getElementById('status').textContent = 'Operational';
-                document.getElementById('status').className = 'title has-text-success';
+                
+                const uniqueIPs = new Set(alerts.map(alert => alert.sourceIP));
+                document.getElementById('uniqueIPs').textContent = uniqueIPs.size;
 
-                debugInfo.innerHTML = `<p>✅ Success! Loaded ${alerts.length} alerts</p>`;
-
-                if (alerts.length === 0) {
-                    tableBody.innerHTML = '<tr><td colspan="4" class="has-text-centered">No alerts yet. Traps are active!</td></tr>';
-                    return;
+                if (alerts.length > 0) {
+                    const lastAlert = alerts[alerts.length - 1];
+                    document.getElementById('lastTrigger').textContent = 
+                        new Date(lastAlert.timestamp).toLocaleTimeString();
                 }
 
                 // Display alerts
-                tableBody.innerHTML = '';
-                alerts.reverse().forEach(alert => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${new Date(alert.timestamp).toLocaleString()}</td>
-                        <td><code>${alert.token}</code></td>
-                        <td>${alert.sourceIP}</td>
-                        <td>${(alert.userAgent || '').substring(0, 60)}...</td>
+                if (alerts.length === 0) {
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="has-text-centered">
+                                <div class="content">
+                                    <p>🚨 No alerts yet</p>
+                                    <p class="is-size-7 has-text-muted">Trigger a trap or click "Test Alert" to see alerts here</p>
+                                </div>
+                            </td>
+                        </tr>
                     `;
-                    tableBody.appendChild(row);
-                });
+                } else {
+                    // Show most recent alerts first
+                    alerts.reverse().forEach((alert, index) => {
+                        const row = document.createElement('tr');
+                        
+                        // Make recent alerts stand out
+                        if (index === 0) {
+                            row.style.background = 'rgba(255, 71, 15, 0.1)';
+                        }
+                        
+                        row.innerHTML = `
+                            <td>${new Date(alert.timestamp).toLocaleString()}</td>
+                            <td><code class="console-text">${alert.token}</code></td>
+                            <td><span class="tag is-dark">${alert.sourceIP}</span></td>
+                            <td title="${alert.userAgent || 'Unknown'}">
+                                ${(alert.userAgent || 'Unknown').substring(0, 50)}...
+                            </td>
+                            <td>
+                                <button class="button is-small is-outlined is-primary" 
+                                        onclick="showAlertDetails('${alert.token}', '${alert.sourceIP}', '${(alert.userAgent || '').replace(/'/g, "\\'")}', '${alert.timestamp}')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                }
+
+                loadingMessage.style.display = 'none';
+                alertsTable.style.display = 'table';
+                updateConnectionStatus(true, `Live - ${alerts.length} alerts`);
 
             } catch (error) {
-                console.error('Error:', error);
-                debugInfo.innerHTML = `
-                    <p>❌ Error loading alerts: ${error.message}</p>
-                    <p>📝 Check if:</p>
-                    <ul>
-                        <li>GitHub repository exists: <code>darshan-sec/canarytrap-dashboard</code></li>
-                        <li><code>alerts.json</code> file exists in the repository</li>
-                        <li>File contains valid JSON with "alerts" array</li>
-                    </ul>
+                console.error('❌ Error loading alerts:', error);
+                
+                loadingMessage.innerHTML = `
+                    <div class="notification is-warning">
+                        <p><strong>Unable to load alerts</strong></p>
+                        <p>Error: ${error.message}</p>
+                        <p class="is-size-7">Check browser console for details</p>
+                    </div>
                 `;
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="4" class="has-text-centered has-text-warning">
-                            ❌ Cannot load alerts. Check debug info above.
-                        </td>
-                    </tr>
-                `;
-                document.getElementById('status').textContent = 'Error';
-                document.getElementById('status').className = 'title has-text-danger';
+                
+                updateConnectionStatus(false, 'Connection failed');
+                
+                // Show demo data if real data fails
+                showDemoData();
             }
         }
 
-        // Load alerts on page load and every 30 seconds
+        // Show demo data for portfolio
+        function showDemoData() {
+            const tableBody = document.getElementById('alertsTableBody');
+            const alertsTable = document.getElementById('alertsTable');
+            const loadingMessage = document.getElementById('loadingMessage');
+            
+            const demoAlerts = [
+                {
+                    token: 'demo-token-1',
+                    sourceIP: '192.168.1.100',
+                    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                    timestamp: new Date(Date.now() - 2 * 60 * 1000).toISOString()
+                },
+                {
+                    token: 'demo-token-2', 
+                    sourceIP: '203.0.113.45',
+                    userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15',
+                    timestamp: new Date(Date.now() - 5 * 60 * 1000).toISOString()
+                }
+            ];
+
+            tableBody.innerHTML = '';
+            demoAlerts.forEach(alert => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${new Date(alert.timestamp).toLocaleString()} <span class="tag is-warning is-small">DEMO</span></td>
+                    <td><code class="console-text">${alert.token}</code></td>
+                    <td><span class="tag is-dark">${alert.sourceIP}</span></td>
+                    <td>${alert.userAgent.substring(0, 50)}...</td>
+                    <td>
+                        <button class="button is-small is-outlined is-primary" 
+                                onclick="showAlertDetails('${alert.token}', '${alert.sourceIP}', '${alert.userAgent.replace(/'/g, "\\'")}', '${alert.timestamp}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            document.getElementById('totalAlerts').textContent = demoAlerts.length;
+            document.getElementById('uniqueIPs').textContent = 2;
+            document.getElementById('lastTrigger').textContent = new Date().toLocaleTimeString();
+
+            loadingMessage.style.display = 'none';
+            alertsTable.style.display = 'table';
+            updateConnectionStatus(true, 'Demo Mode - 2 alerts');
+        }
+
+        // Test alert function
+        async function testAlert() {
+            try {
+                console.log('🚀 Triggering test alert...');
+                // Trigger your actual worker
+                await fetch('https://accountinfo.darshandarsha439.workers.dev/demo-test-' + Date.now());
+                
+                // Show success message
+                const notification = document.createElement('div');
+                notification.className = 'notification is-success';
+                notification.innerHTML = `
+                    <button class="delete" onclick="this.parentElement.remove()"></button>
+                    <p>✅ Test alert triggered! Check Discord and refresh in 30 seconds to see it here.</p>
+                `;
+                document.querySelector('.container').prepend(notification);
+                
+                // Auto-refresh after 30 seconds
+                setTimeout(loadAlerts, 30000);
+                
+            } catch (error) {
+                console.error('Test alert failed:', error);
+            }
+        }
+
+        // Show alert details
+        function showAlertDetails(token, ip, userAgent, timestamp) {
+            alert(`🔍 Alert Details:\n\nToken: ${token}\nIP: ${ip}\nTime: ${new Date(timestamp).toLocaleString()}\nUser Agent: ${userAgent.replace(/\\'/g, "'")}`);
+        }
+
+        // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 CanaryTrap Dashboard Initialized');
             loadAlerts();
+            
+            // Auto-refresh every 30 seconds
             setInterval(loadAlerts, 30000);
+            
+            // Show welcome message
+            setTimeout(() => {
+                console.log('✅ Dashboard ready - Monitoring canary traps');
+            }, 1000);
         });
     </script>
 </body>
