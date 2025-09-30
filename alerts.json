@@ -1,4 +1,5 @@
-[
+{
+  "alerts": [
   {
     "token": "test-org-fix",
     "sourceIP": "2401:4900:16fa:d9ee:3cc0:851d:2849:63a1",
@@ -366,3 +367,4 @@
     "timestamp": "2025-09-19T10:32:18.329Z"
   }
 ]
+}
