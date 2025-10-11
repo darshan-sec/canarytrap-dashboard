@@ -863,6 +863,12 @@
       "sourceIP": "45.5.66.29",
       "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/121.0",
       "timestamp": "2025-10-08T17:41:24.223Z"
+    },
+    {
+      "token": ".env",
+      "sourceIP": "176.65.149.195",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.3",
+      "timestamp": "2025-10-11T20:01:54.711Z"
     }
   ]
 }
