@@ -995,6 +995,12 @@
       "sourceIP": "2a14:7c1::2",
       "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.3",
       "timestamp": "2025-10-27T07:34:07.288Z"
+    },
+    {
+      "token": ".env",
+      "sourceIP": "2a14:7c1::2",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.3",
+      "timestamp": "2025-11-06T02:28:58.873Z"
     }
   ]
 }
