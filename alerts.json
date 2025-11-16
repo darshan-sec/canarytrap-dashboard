@@ -1031,6 +1031,12 @@
       "sourceIP": "2a14:7c1::2",
       "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.3",
       "timestamp": "2025-11-10T18:05:25.255Z"
+    },
+    {
+      "token": "graphql",
+      "sourceIP": "206.189.225.181",
+      "userAgent": "Mozilla/5.0 (l9scan/2.0.33e27393e2431313e2838313; +https://leakix.net)",
+      "timestamp": "2025-11-16T11:12:26.064Z"
     }
   ]
 }
