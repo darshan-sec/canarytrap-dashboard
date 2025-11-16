@@ -1325,6 +1325,12 @@
       "sourceIP": "188.166.108.93",
       "userAgent": "Mozilla/5.0 (l9scan/2.0.33e27393e2431313e2838313; +https://leakix.net)",
       "timestamp": "2025-11-16T11:13:07.350Z"
+    },
+    {
+      "token": "info.php",
+      "sourceIP": "188.166.108.93",
+      "userAgent": "Mozilla/5.0 (l9scan/2.0.33e27393e2431313e2838313; +https://leakix.net)",
+      "timestamp": "2025-11-16T11:13:08.571Z"
     }
   ]
 }
