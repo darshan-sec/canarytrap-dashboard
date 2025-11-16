@@ -1067,6 +1067,12 @@
       "sourceIP": "206.189.225.181",
       "userAgent": "Mozilla/5.0 (l9scan/2.0.33e27393e2431313e2838313; +https://leakix.net)",
       "timestamp": "2025-11-16T11:12:29.726Z"
+    },
+    {
+      "token": "swagger",
+      "sourceIP": "206.189.225.181",
+      "userAgent": "Mozilla/5.0 (l9scan/2.0.33e27393e2431313e2838313; +https://leakix.net)",
+      "timestamp": "2025-11-16T11:12:30.353Z"
     }
   ]
 }
