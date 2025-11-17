@@ -1337,6 +1337,12 @@
       "sourceIP": "2a14:7c1::2",
       "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.3",
       "timestamp": "2025-11-17T00:18:11.841Z"
+    },
+    {
+      "token": ".git",
+      "sourceIP": "213.209.157.81",
+      "userAgent": "Opera/7.51 (Windows NT 5.1; U) [en]",
+      "timestamp": "2025-11-17T04:42:02.266Z"
     }
   ]
 }
