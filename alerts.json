@@ -1355,6 +1355,12 @@
       "sourceIP": "213.209.157.81",
       "userAgent": "Mozilla/5.0 (Windows Phone 8.1; ARM; Trident/7.0; Touch; rv:11.0; IEMobile/11.0; NOKIA; Lumia 630) like Gecko",
       "timestamp": "2025-11-17T12:20:08.031Z"
+    },
+    {
+      "token": ".git",
+      "sourceIP": "45.148.10.246",
+      "userAgent": "Go-http-client/1.1",
+      "timestamp": "2025-11-17T15:31:39.233Z"
     }
   ]
 }
