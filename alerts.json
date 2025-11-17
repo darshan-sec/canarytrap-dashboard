@@ -1343,6 +1343,12 @@
       "sourceIP": "213.209.157.81",
       "userAgent": "Opera/7.51 (Windows NT 5.1; U) [en]",
       "timestamp": "2025-11-17T04:42:02.266Z"
+    },
+    {
+      "token": ".git",
+      "sourceIP": "195.178.110.223",
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36",
+      "timestamp": "2025-11-17T09:36:08.528Z"
     }
   ]
 }
