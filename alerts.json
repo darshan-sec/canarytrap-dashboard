@@ -1367,6 +1367,12 @@
       "sourceIP": "197.238.34.124",
       "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36",
       "timestamp": "2025-11-18T01:36:20.468Z"
+    },
+    {
+      "token": ".git",
+      "sourceIP": "45.130.203.223",
+      "userAgent": "Python-urllib/3.10",
+      "timestamp": "2025-11-18T08:26:15.383Z"
     }
   ]
 }
