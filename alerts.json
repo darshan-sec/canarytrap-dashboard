@@ -1373,6 +1373,12 @@
       "sourceIP": "45.130.203.223",
       "userAgent": "Python-urllib/3.10",
       "timestamp": "2025-11-18T08:26:15.383Z"
+    },
+    {
+      "token": "wp-includes",
+      "sourceIP": "35.227.34.209",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4240.193 Safari/537.36",
+      "timestamp": "2025-11-18T15:34:57.276Z"
     }
   ]
 }
