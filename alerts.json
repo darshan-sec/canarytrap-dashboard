@@ -1481,6 +1481,12 @@
       "sourceIP": "104.194.192.32",
       "userAgent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/121.0",
       "timestamp": "2025-11-19T03:53:28.651Z"
+    },
+    {
+      "token": ".git",
+      "sourceIP": "93.123.109.7",
+      "userAgent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.100 Safari/537.36 OPR/62.0.3331.99",
+      "timestamp": "2025-11-21T01:56:04.127Z"
     }
   ]
 }
