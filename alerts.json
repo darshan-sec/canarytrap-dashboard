@@ -1523,6 +1523,12 @@
       "sourceIP": "54.252.243.245",
       "userAgent": "python-httpx/0.22.0",
       "timestamp": "2025-11-28T18:44:52.618Z"
+    },
+    {
+      "token": ".env",
+      "sourceIP": "45.139.104.171",
+      "userAgent": "Mozilla/5.0 (compatible; Konqueror/4.5; NetBSD 5.0.2; X11; amd64; en_US) KHTML/4.5.4 (like Gecko)",
+      "timestamp": "2025-11-29T12:34:36.736Z"
     }
   ]
 }
