@@ -1529,6 +1529,12 @@
       "sourceIP": "45.139.104.171",
       "userAgent": "Mozilla/5.0 (compatible; Konqueror/4.5; NetBSD 5.0.2; X11; amd64; en_US) KHTML/4.5.4 (like Gecko)",
       "timestamp": "2025-11-29T12:34:36.736Z"
+    },
+    {
+      "token": ".env",
+      "sourceIP": "2a14:7c1::2",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.3",
+      "timestamp": "2025-11-30T11:33:45.897Z"
     }
   ]
 }
