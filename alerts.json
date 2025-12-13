@@ -1541,6 +1541,12 @@
       "sourceIP": "13.212.4.47",
       "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36 Assetnote/1.0.0",
       "timestamp": "2025-12-11T10:11:31.454Z"
+    },
+    {
+      "token": "robots.txt",
+      "sourceIP": "104.165.105.237",
+      "userAgent": "Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.4b) Gecko/20030516 Mozilla Firebird/0.6",
+      "timestamp": "2025-12-13T06:38:32.529Z"
     }
   ]
 }
