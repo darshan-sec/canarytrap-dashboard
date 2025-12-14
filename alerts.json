@@ -1547,6 +1547,12 @@
       "sourceIP": "104.165.105.237",
       "userAgent": "Mozilla/5.0 (Windows; U; Windows NT 5.0; en-US; rv:1.4b) Gecko/20030516 Mozilla Firebird/0.6",
       "timestamp": "2025-12-13T06:38:32.529Z"
+    },
+    {
+      "token": ".env",
+      "sourceIP": "2a14:7c1::2",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.3",
+      "timestamp": "2025-12-14T00:50:30.215Z"
     }
   ]
 }
