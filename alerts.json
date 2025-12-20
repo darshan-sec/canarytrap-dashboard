@@ -1559,6 +1559,12 @@
       "sourceIP": "18.183.150.65",
       "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36 Assetnote/1.0.0",
       "timestamp": "2025-12-18T13:02:11.376Z"
+    },
+    {
+      "token": ".env",
+      "sourceIP": "2a14:7c1::2",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.3",
+      "timestamp": "2025-12-20T02:07:22.088Z"
     }
   ]
 }
